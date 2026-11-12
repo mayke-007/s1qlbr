@@ -1,0 +1,14 @@
+# Segredos: nunca enviar para o GitHub
+s1qlbr-config.php
+**/s1qlbr-config.php
+
+# Contadores de uso gerados no servidor
+s1qlbr-data/
+**/s1qlbr-data/
+
+# Lixo de sistema e editor
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/

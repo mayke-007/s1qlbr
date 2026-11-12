@@ -1,0 +1,101 @@
+S1QLBR — Como instalar no HostGator
+===================================
+
+O QUE TEM NESTA PASTA
+- public_html/index.html ............... o gerador (página principal)
+- public_html/api.php .................. o intermediário que chama o Gemini e o Groq
+- public_html/menu.js .................. o menu do topo (usado por todas as páginas)
+- public_html/s1.css ................... o visual das páginas internas
+- public_html/contato/contato.php ...... Fale conosco (formulário que manda e-mail)
+- public_html/analise/index.html ....... Análise de resultados (em breve)
+- public_html/donate/donate.html ....... Apoie o projeto / doação (em breve)
+- s1qlbr-config.php .................... chaves, limites e e-mail de contato (fica FORA da public_html)
+
+1) PEGAR AS CHAVES (grátis, sem cartão)
+- Gemini: https://aistudio.google.com/apikey  → "Create API key"
+- Groq:   https://console.groq.com/keys        → "Create API Key"
+  Atenção: é Groq (com Q), não Grok (o da xAI, que é pago).
+- Não ative faturamento (billing) no projeto do Google. Com faturamento ativo,
+  as chamadas podem passar a ser cobradas.
+
+2) ENVIAR OS ARQUIVOS (cPanel → Gerenciador de Arquivos)
+- Na pasta inicial da conta (/home/SEU_USUARIO), a mesma onde está a pasta
+  public_html, envie o s1qlbr-config.php.
+  NUNCA coloque esse arquivo dentro da public_html.
+- Dentro da public_html (ou da pasta do domínio s1qlbr.com), envie tudo que
+  está em public_html/ mantendo as pastas: contato/, analise/ e donate/.
+
+3) EDITAR O s1qlbr-config.php (botão "Editar" no Gerenciador de Arquivos)
+- Cole a chave do Gemini no lugar de COLE_A_CHAVE_DO_GEMINI.
+- Cole a chave do Groq no lugar de COLE_A_CHAVE_DO_GROQ.
+- Troque o 'salt' por uma frase longa qualquer (ex.: 40 letras aleatórias).
+- Em 'contact' → 'to', coloque o e-mail onde você quer receber as mensagens.
+- Se o site usar outro endereço, ajuste 'allowed_origins'.
+- Salve.
+  (Se você já tem o s1qlbr-config.php no servidor, só copie o bloco 'contact'
+  do modelo para dentro dele. O resto continua igual.)
+
+4) CRIAR O E-MAIL REMETENTE DO FALE CONOSCO
+- cPanel → "Contas de e-mail" → crie contato@s1qlbr.com (pode deixar sem uso).
+  O HostGator só entrega e-mails enviados de uma conta que existe no domínio.
+  Sem isso, as mensagens podem cair no spam ou nem sair.
+- Na primeira mensagem de teste, olhe também a caixa de spam do seu e-mail e
+  marque como "não é spam".
+
+5) CONFERIR O PHP
+- cPanel → "Select PHP Version" ou "MultiPHP Manager": versão 7.4 ou mais nova.
+  (O curl já vem ligado no HostGator.)
+
+6) TESTAR
+- Abra https://s1qlbr.com e veja o menu no topo.
+- Escolha "Grátis · automático (Groq → Gemini)", aceite o aviso e gere uma query.
+- Abra Fale conosco, mande uma mensagem de teste e confira o e-mail.
+- Abra https://s1qlbr.com/analise e https://s1qlbr.com/donate/donate.html.
+
+COMO MEXER NO MENU
+- Abra public_html/menu.js. Lá em cima tem a lista ITENS.
+- Para adicionar uma página: copie uma linha e troque o endereço e os nomes.
+- Para tirar o "em breve" quando a página ficar pronta: apague  breve: true,
+- O último item da lista fica alinhado à direita (hoje é o Fale conosco).
+
+QUANDO TIVER A CHAVE PIX
+- Abra public_html/donate/donate.html e preencha  var CHAVE_PIX = "";
+  O botão "Copiar chave PIX" passa a funcionar sozinho.
+- Para o QR Code, troque o quadrado <div class="qr"> por uma imagem <img>.
+
+FALE CONOSCO: PROTEÇÕES
+- Só aceita envio do próprio site.
+- Campo escondido e tempo mínimo de preenchimento contra robôs.
+- 5 mensagens por hora e 15 por dia por visitante (IP guardado só como hash).
+- A mensagem não é gravada no servidor: vai direto para o seu e-mail.
+- Se a pessoa informar e-mail, é só clicar em "Responder" para falar com ela.
+- Dá para abrir já com o assunto escolhido: contato.php?tipo=erro,
+  ?tipo=sugestao ou ?tipo=elogio.
+
+COMO FUNCIONA O AUTOMÁTICO (IA GRÁTIS)
+- Tenta primeiro o Groq (mais rápido). Se falhar, demorar demais ou ficar sem
+  cota, usa o Gemini na hora.
+- Para mudar a ordem, edite 'auto_order' no s1qlbr-config.php.
+
+PROTEÇÕES DA IA GRÁTIS
+- Chaves só no servidor, fora da pasta pública.
+- Só aceita chamadas vindas do seu site.
+- Pedido de até 300 caracteres; resposta curta.
+- Instrução fixa no servidor: o visitante não consegue mudar o papel da IA.
+- Resposta que não for uma query S1QL é descartada ("fora do escopo").
+- 20 consultas por hora e 60 por dia por visitante (IP guardado só como hash).
+- Teto diário por motor (daily_cap), para não estourar a cota grátis.
+- Não grava o texto dos pedidos nem as queries. A pasta s1qlbr-data guarda só contadores.
+
+SE DER ERRO
+- Menu não aparece: o menu.js não está na public_html, ou falta a linha
+  <script src="/menu.js" defer></script> no index.html.
+- Fale conosco diz "ainda não está configurado": falta o bloco 'contact'
+  no s1qlbr-config.php, ou o 'to' ainda está como SEU_EMAIL.
+- Fale conosco diz "não conseguiu enviar o e-mail": crie a conta
+  contato@s1qlbr.com (passo 4) ou confira o 'from' no s1qlbr-config.php.
+- "O motor grátis não está disponível neste endereço": o api.php não está na
+  mesma pasta do index.html.
+- Erro de configuração: o s1qlbr-config.php não está na pasta acima da public_html.
+- "não respondeu": chave errada, ou o nome do modelo saiu de linha. Troque
+  'model' no s1qlbr-config.php. Com 'debug' => true, a página mostra o motivo exato do erro (veja os modelos atuais no site do Gemini/Groq).
