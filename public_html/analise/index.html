@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-29WJ5GL1VZ"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-29WJ5GL1VZ');</script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Análise de resultados · S1QLBR</title>
+<meta name="description" content="Em breve: envie o JSON exportado do Event Search e veja os resultados da query de forma visual, sem sair do navegador.">
+<link rel="canonical" href="https://s1qlbr.com/analise/">
+<meta name="theme-color" content="#0B1F2A">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2224%22%20fill%3D%22%230B1F2A%22/%3E%3Cpath%20d%3D%22M28%2054%20A32%2011%200%200%200%2092%2054%20V72%20A32%2011%200%200%201%2028%2072%20Z%22%20fill%3D%22%23B6F23A%22/%3E%3Cellipse%20cx%3D%2260%22%20cy%3D%2234%22%20rx%3D%2232%22%20ry%3D%2211%22%20fill%3D%22none%22%20stroke%3D%22%23E6F1F5%22%20stroke-width%3D%2210%22/%3E%3Cpath%20d%3D%22M28%2034%20V88%20A32%2011%200%200%200%2092%2088%20V34%22%20fill%3D%22none%22%20stroke%3D%22%23E6F1F5%22%20stroke-width%3D%2210%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E">
+<script>try{var t=localStorage.getItem("s1ql-tema");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/s1.css">
+<script src="/menu.js" defer></script>
+<style>
+.drop{border:2px dashed var(--line);border-radius:10px;padding:34px 18px;text-align:center;display:grid;gap:8px;justify-items:center;color:var(--muted);background:var(--bg);opacity:.75}
+.drop svg{width:38px;height:38px;fill:none;stroke:var(--muted);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.drop b{color:var(--ink);font-weight:600}
+.drop code{font-family:var(--mono);font-size:.8rem}
+.steps{margin:0;padding-left:20px;display:grid;gap:6px;font-size:.92rem}
+.steps code{font-family:var(--mono);font-size:.84rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="ttl">
+      <a class="home" href="/" aria-label="S1QLBR">
+        <svg class="logo" viewBox="0 0 120 120" aria-hidden="true"><rect width="120" height="120" rx="26" fill="#0B1F2A"/><path d="M24 51 A28 10 0 0 0 80 51 V70 A28 10 0 0 1 24 70 Z" fill="#B6F23A"/><ellipse cx="52" cy="32" rx="28" ry="10" fill="none" stroke="#E6F1F5" stroke-width="6"/><path d="M24 32 V88 A28 10 0 0 0 80 88 V32" fill="none" stroke="#E6F1F5" stroke-width="6" stroke-linejoin="round"/><path d="M24 51 A28 10 0 0 0 80 51 M24 70 A28 10 0 0 0 80 70" fill="none" stroke="#E6F1F5" stroke-width="6"/><circle cx="84" cy="84" r="16" fill="#0B1F2A" stroke="#B6F23A" stroke-width="7"/><path d="M95.5 95.5 L105 105" stroke="#B6F23A" stroke-width="8" stroke-linecap="round"/></svg>
+        <span class="wm">S1<span class="ql">QL</span><span class="br">BR</span></span>
+      </a>
+      <span class="tag" data-i="tag">Gerador de queries para threat hunting</span>
+    </div>
+    <div class="tools"><select id="lang" class="langsel"></select></div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h1><span data-i="h1">Análise de resultados</span><span class="badge" data-i="soon">em breve</span></h1>
+      <p class="lead" data-i="lead">Exporte o resultado da sua query no Event Search em JSON, envie aqui e veja os eventos organizados para leitura humana: linha do tempo, árvore de processos e os pontos que merecem atenção.</p>
+    </section>
+
+    <section class="panel">
+      <div class="drop" aria-disabled="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+        <b data-i="dropT">Arraste o arquivo .json aqui</b>
+        <span data-i="dropS">Esta função ainda está em construção.</span>
+        <code>events.json</code>
+      </div>
+    </section>
+
+    <section>
+      <h2 data-i="whatT">O que vai ter</h2>
+      <div class="cards">
+        <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></div><h3 data-i="c1t">Linha do tempo</h3><p data-i="c1d">Os eventos em ordem, agrupados por minuto, para ver o que aconteceu antes e depois.</p></div>
+        <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="12" r="2"/><path d="M6 7v10M6 12h10"/></svg></div><h3 data-i="c2t">Árvore de processos</h3><p data-i="c2d">Quem criou quem, com linha de comando e usuário de cada processo.</p></div>
+        <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div><h3 data-i="c3t">Resumo do resultado</h3><p data-i="c3d">Hosts, usuários, domínios e IPs que mais aparecem, com contagem.</p></div>
+        <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17h.01"/></svg></div><h3 data-i="c4t">Pontos de atenção</h3><p data-i="c4d">Destaque para binários sem assinatura, pastas de usuário, comandos encodados e conexões externas.</p></div>
+        <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><h3 data-i="c5t">Fica no seu navegador</h3><p data-i="c5d">O arquivo é lido no seu computador. Nada é enviado para o servidor do S1QLBR.</p></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 data-i="howT">Como exportar (para já ir se preparando)</h2>
+      <ol class="steps">
+        <li data-i="s1">Rode a query no Event Search do console.</li>
+        <li data-i="s2">Use a opção de exportar resultados e escolha o formato JSON.</li>
+        <li data-i="s3">Quando a página estiver pronta, é só arrastar o arquivo aqui.</li>
+      </ol>
+      <div class="row" style="margin-top:16px">
+        <a class="btn primary" href="/" data-i="cta1">Gerar uma query agora</a>
+        <a class="btn" href="/contato/contato.php?tipo=sugestao" data-i="cta2">Sugerir o que mostrar</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span><b>S1QLBR</b> · s1qlbr.com · <span data-i="foot">gratuito e independente. Compatível com SentinelOne, sem vínculo com a empresa.</span></span>
+    <a href="/" data-i="back">Voltar para o gerador</a>
+  </footer>
+</div>
+
+<script>
+// ===== Página "em breve". Quando a análise ficar pronta, o leitor do JSON entra aqui. =====
+(function(){
+  var TX = {
+    pt:{title:"Análise de resultados · S1QLBR", tag:"Gerador de queries para threat hunting", h1:"Análise de resultados", soon:"em breve",
+      lead:"Exporte o resultado da sua query no Event Search em JSON, envie aqui e veja os eventos organizados para leitura humana: linha do tempo, árvore de processos e os pontos que merecem atenção.",
+      dropT:"Arraste o arquivo .json aqui", dropS:"Esta função ainda está em construção.", whatT:"O que vai ter",
+      c1t:"Linha do tempo", c1d:"Os eventos em ordem, agrupados por minuto, para ver o que aconteceu antes e depois.",
+      c2t:"Árvore de processos", c2d:"Quem criou quem, com linha de comando e usuário de cada processo.",
+      c3t:"Resumo do resultado", c3d:"Hosts, usuários, domínios e IPs que mais aparecem, com contagem.",
+      c4t:"Pontos de atenção", c4d:"Destaque para binários sem assinatura, pastas de usuário, comandos encodados e conexões externas.",
+      c5t:"Fica no seu navegador", c5d:"O arquivo é lido no seu computador. Nada é enviado para o servidor do S1QLBR.",
+      howT:"Como exportar (para já ir se preparando)", s1:"Rode a query no Event Search do console.", s2:"Use a opção de exportar resultados e escolha o formato JSON.", s3:"Quando a página estiver pronta, é só arrastar o arquivo aqui.",
+      cta1:"Gerar uma query agora", cta2:"Sugerir o que mostrar",
+      foot:"gratuito e independente. Compatível com SentinelOne, sem vínculo com a empresa.", back:"Voltar para o gerador", idioma:"Idioma"},
+    en:{title:"Results analysis · S1QLBR", tag:"Query builder for threat hunting", h1:"Results analysis", soon:"soon",
+      lead:"Export your query results from Event Search as JSON, drop the file here and see the events laid out for humans: a timeline, a process tree and the things worth a closer look.",
+      dropT:"Drop the .json file here", dropS:"This feature is still being built.", whatT:"What's coming",
+      c1t:"Timeline", c1d:"Events in order, grouped by minute, so you can see what happened before and after.",
+      c2t:"Process tree", c2d:"Who spawned whom, with each process's command line and user.",
+      c3t:"Result summary", c3d:"The hosts, users, domains and IPs that show up most, with counts.",
+      c4t:"Things to check", c4d:"Highlights unsigned binaries, user folders, encoded commands and external connections.",
+      c5t:"Stays in your browser", c5d:"The file is read on your computer. Nothing is sent to the S1QLBR server.",
+      howT:"How to export (to get ready)", s1:"Run the query in the console's Event Search.", s2:"Use the export results option and choose JSON.", s3:"Once this page is ready, just drop the file here.",
+      cta1:"Build a query now", cta2:"Suggest what to show",
+      foot:"free and independent. Compatible with SentinelOne, not affiliated with the company.", back:"Back to the query builder", idioma:"Language"},
+    es:{title:"Análisis de resultados · S1QLBR", tag:"Generador de queries para threat hunting", h1:"Análisis de resultados", soon:"pronto",
+      lead:"Exporta el resultado de tu query del Event Search en JSON, súbelo aquí y ve los eventos organizados para lectura humana: línea de tiempo, árbol de procesos y los puntos que merecen atención.",
+      dropT:"Arrastra el archivo .json aquí", dropS:"Esta función todavía está en construcción.", whatT:"Lo que tendrá",
+      c1t:"Línea de tiempo", c1d:"Los eventos en orden, agrupados por minuto, para ver qué pasó antes y después.",
+      c2t:"Árbol de procesos", c2d:"Quién creó a quién, con la línea de comandos y el usuario de cada proceso.",
+      c3t:"Resumen del resultado", c3d:"Hosts, usuarios, dominios e IPs que más aparecen, con conteo.",
+      c4t:"Puntos de atención", c4d:"Destaca binarios sin firma, carpetas de usuario, comandos codificados y conexiones externas.",
+      c5t:"Se queda en tu navegador", c5d:"El archivo se lee en tu computadora. No se envía nada al servidor de S1QLBR.",
+      howT:"Cómo exportar (para ir preparándote)", s1:"Ejecuta la query en el Event Search de la consola.", s2:"Usa la opción de exportar resultados y elige el formato JSON.", s3:"Cuando la página esté lista, solo arrastra el archivo aquí.",
+      cta1:"Generar una query ahora", cta2:"Sugerir qué mostrar",
+      foot:"gratuito e independiente. Compatible con SentinelOne, sin vínculo con la empresa.", back:"Volver al generador", idioma:"Idioma"},
+    zh:{title:"结果分析 · S1QLBR", tag:"威胁狩猎查询生成器", h1:"结果分析", soon:"即将推出",
+      lead:"将 Event Search 的查询结果导出为 JSON，上传到这里，即可看到便于阅读的事件视图：时间线、进程树以及值得关注的要点。",
+      dropT:"将 .json 文件拖到这里", dropS:"此功能仍在开发中。", whatT:"即将提供",
+      c1t:"时间线", c1d:"按时间顺序、按分钟分组的事件，方便查看前后发生了什么。",
+      c2t:"进程树", c2d:"进程之间的创建关系，以及每个进程的命令行和用户。",
+      c3t:"结果摘要", c3d:"出现最多的主机、用户、域名和 IP 及其数量。",
+      c4t:"关注要点", c4d:"突出显示未签名程序、用户目录、编码命令和外部连接。",
+      c5t:"只在浏览器中处理", c5d:"文件在你的电脑上读取，不会发送到 S1QLBR 服务器。",
+      howT:"如何导出（提前准备）", s1:"在控制台的 Event Search 中运行查询。", s2:"使用导出结果功能并选择 JSON 格式。", s3:"页面上线后，把文件拖到这里即可。",
+      cta1:"现在生成查询", cta2:"建议要展示的内容",
+      foot:"免费且独立。兼容 SentinelOne，与该公司无关联。", back:"返回查询生成器", idioma:"语言"}
+  };
+  function pronto(){ if(window.S1Menu) S1Menu.idioma(TX); }
+  if(window.S1Menu) pronto(); else document.addEventListener("DOMContentLoaded", pronto);
+})();
+</script>
+</body>
+</html>

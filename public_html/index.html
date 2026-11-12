@@ -1,0 +1,1161 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-29WJ5GL1VZ"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-29WJ5GL1VZ');
+</script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="S1QLBR: gerador gratuito de queries para threat hunting, compatível com SentinelOne. Escreva em português e copie a query pronta para o Event Search.">
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>S1QLBR</title>
+<link rel="canonical" href="https://s1qlbr.com/">
+<meta property="og:title" content="S1QLBR">
+<meta property="og:description" content="Gerador gratuito de queries para threat hunting, compatível com SentinelOne. Escreva em português e copie a query pronta.">
+<meta property="og:url" content="https://s1qlbr.com/">
+<meta name="theme-color" content="#0B1F2A">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20120%20120%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20rx%3D%2224%22%20fill%3D%22%230B1F2A%22/%3E%3Cpath%20d%3D%22M28%2054%20A32%2011%200%200%200%2092%2054%20V72%20A32%2011%200%200%201%2028%2072%20Z%22%20fill%3D%22%23B6F23A%22/%3E%3Cellipse%20cx%3D%2260%22%20cy%3D%2234%22%20rx%3D%2232%22%20ry%3D%2211%22%20fill%3D%22none%22%20stroke%3D%22%23E6F1F5%22%20stroke-width%3D%2210%22/%3E%3Cpath%20d%3D%22M28%2034%20V88%20A32%2011%200%200%200%2092%2088%20V34%22%20fill%3D%22none%22%20stroke%3D%22%23E6F1F5%22%20stroke-width%3D%2210%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E">
+<script>try{var t=localStorage.getItem("s1ql-tema");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+<script src="/menu.js" defer></script>
+<style>
+/* Layout: console de analista — pedido + query à esquerda, dicionário de campos à direita, receitas embaixo. Identidade S1QLBR (s1qlbr/identidade.md): Abismo, Sinal, Gelo; Space Grotesk + JetBrains Mono. */
+:root{
+  --bg:#f1f5f7; --panel:#ffffff; --ink:#0B1F2A; --muted:#5B6B73; --line:#d6e0e5;
+  --accent:#3F7D0A; --accent-hover:#346a08; --accent-ink:#ffffff; --accent-soft:#e8f3d3; --link:#3F7D0A;
+  --wm-s1:#0B1F2A; --wm-ql:#3F7D0A; --wm-br:#5B6B73;
+  --code-bg:#0B1F2A; --code-ink:#E6F1F5; --kw:#B6F23A; --str:#ffd27a; --op:#A9BDC6;
+  --warn:#a35a00; --warn-soft:#fdf1dc;
+  --sans:"Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0B1F2A; --panel:#0f2834; --ink:#E6F1F5; --muted:#A9BDC6; --line:#1d3b49;
+  --accent:#B6F23A; --accent-hover:#c6f765; --accent-ink:#0B1F2A; --accent-soft:#1c3a2c; --link:#B6F23A;
+  --wm-s1:#E6F1F5; --wm-ql:#B6F23A; --wm-br:#A9BDC6;
+  --code-bg:#07161e; --code-ink:#E6F1F5; --kw:#B6F23A; --str:#ffd27a; --op:#8ea5b0;
+  --warn:#f0b35a; --warn-soft:#2c2212; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0B1F2A; --panel:#0f2834; --ink:#E6F1F5; --muted:#A9BDC6; --line:#1d3b49;
+  --accent:#B6F23A; --accent-hover:#c6f765; --accent-ink:#0B1F2A; --accent-soft:#1c3a2c; --link:#B6F23A;
+  --wm-s1:#E6F1F5; --wm-ql:#B6F23A; --wm-br:#A9BDC6;
+  --code-bg:#07161e; --code-ink:#E6F1F5; --kw:#B6F23A; --str:#ffd27a; --op:#8ea5b0;
+  --warn:#f0b35a; --warn-soft:#2c2212; color-scheme:dark}
+:root[data-theme="light"]{color-scheme:light}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:22px}
+header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;align-items:start}
+header .ttl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h1.wm{font-family:var(--sans);font-weight:700;font-size:1.75rem;letter-spacing:-.03em;color:var(--wm-s1);line-height:1}
+h1.wm .ql{font-family:var(--mono);font-weight:500;color:var(--wm-ql);letter-spacing:0}
+h1.wm .br{color:var(--wm-br)}
+header .tools{display:flex;gap:8px;align-items:center}
+.langsel{font:inherit;font-size:.85rem;padding:6px 8px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+header .logo{width:40px;height:40px;flex:none;border-radius:9px;box-shadow:0 0 0 1px var(--line)}
+header .tag{font-size:.85rem;color:var(--muted);padding-left:10px;border-left:1px solid var(--line)}
+@media (max-width:560px){header .tag{display:none}}
+footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:16px;display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between}
+header .mark svg{width:16px;height:16px;stroke:var(--accent-ink);fill:none;stroke-width:2.4;stroke-linecap:round}
+header p{grid-column:1/-1}
+.theme{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;padding:6px 11px}
+.theme svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+button.primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+.f code{color:var(--link)}
+.cfg a{color:var(--link)}
+h1{font-size:1.55rem;font-weight:600;margin:0;letter-spacing:-.01em}
+header p{margin:0;color:var(--muted);max-width:68ch}
+h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px;font-weight:600}
+.grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px;min-width:0}
+textarea,input[type=search]{width:100%;box-sizing:border-box;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+textarea{min-height:84px;resize:vertical}
+textarea:focus,input:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+button{font:inherit;font-size:.9rem;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:7px 12px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.mode{font-size:.82rem;color:var(--muted);margin-left:auto}
+.mode b{color:var(--accent);font-weight:600}
+.out{margin-top:16px}
+pre.q{background:var(--code-bg);color:var(--code-ink);font-family:var(--mono);font-size:.88rem;border-radius:6px;padding:14px 16px;margin:0;white-space:pre-wrap;word-break:break-word;min-height:1.5em}
+.q .k{color:var(--kw)} .q .s{color:var(--str)} .q .o{color:var(--op)}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.qhead h2{margin:0}
+.notes{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:6px;font-size:.88rem;color:var(--muted)}
+.notes li{padding-left:14px;position:relative}
+.notes li::before{content:"";position:absolute;left:0;top:.6em;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.notes li.w::before{background:var(--warn)}
+.examples{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{font-size:.8rem;padding:4px 9px;border-radius:999px;background:var(--accent-soft);border:1px solid transparent;color:var(--ink)}
+.chip:hover{border-color:var(--accent)}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.filters button{font-size:.78rem;padding:3px 9px;border-radius:999px}
+.filters button[aria-pressed=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.fields{max-height:560px;overflow:auto;border-top:1px solid var(--line)}
+.f{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:9px 2px;border-bottom:1px solid var(--line)}
+.f code{font-family:var(--mono);font-size:.84rem;color:var(--accent);word-break:break-all}
+.f .d{grid-column:1/-1;font-size:.84rem;color:var(--muted)}
+.f .ex{grid-column:1/-1;font-family:var(--mono);font-size:.76rem;color:var(--muted);opacity:.85;word-break:break-all}
+.f button{font-size:.75rem;padding:2px 8px;align-self:start}
+.recipes{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.r{border:1px solid var(--line);border-radius:6px;padding:12px;display:grid;gap:8px;background:var(--panel);min-width:0}
+.r h3{margin:0;font-size:.95rem;font-weight:600}
+.r p{margin:0;font-size:.84rem;color:var(--muted)}
+.r pre{font-family:var(--mono);font-size:.76rem;background:var(--bg);border-radius:4px;padding:8px;margin:0;white-space:pre-wrap;word-break:break-word}
+.r .row{margin-top:0}
+.ops{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;font-size:.85rem}
+.ops code{font-family:var(--mono);color:var(--accent);white-space:nowrap}
+.ops span{color:var(--muted)}
+.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:6px;font-size:.85rem}
+.status{font-size:.82rem;color:var(--muted);margin-top:8px}
+.status.err{color:var(--warn)}
+@media (prefers-reduced-motion:no-preference){button{transition:border-color .15s}}
+.engine{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;font-size:.88rem}
+.engine label{color:var(--muted)}
+select,.cfg input[type=text],.cfg input[type=password]{font:inherit;font-size:.88rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 9px}
+.cfg{margin-top:10px;border:1px solid var(--line);border-radius:6px;padding:12px;display:grid;gap:10px;background:var(--bg)}
+.cfg .fld{display:grid;gap:4px;font-size:.84rem}
+.cfg .fld span{color:var(--muted)}
+.cfg input{width:100%;box-sizing:border-box}
+.cfg .hint{font-size:.8rem;color:var(--muted);margin:0}
+.cfg a{color:var(--accent)}
+.cfg .chk{display:flex;gap:8px;align-items:center;font-size:.84rem}
+dialog.aviso{border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);padding:22px;max-width:520px;width:calc(100% - 32px);box-sizing:border-box}
+dialog.aviso::backdrop{background:rgba(5,12,16,.55)}
+dialog.aviso h2{font-size:1.15rem;text-transform:none;letter-spacing:0;color:var(--ink);margin:0 0 12px}
+dialog.aviso ul{margin:0 0 16px;padding-left:18px;display:grid;gap:8px;font-size:.92rem}
+dialog.aviso .row{justify-content:flex-end;margin-top:0}
+.cookie{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));max-width:560px;margin:0 auto;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:14px 16px;box-shadow:0 8px 28px rgba(5,12,16,.25);display:grid;gap:10px;font-size:.88rem;z-index:20}
+.cookie p{margin:0;color:var(--muted)}
+.cookie .row{margin-top:0;justify-content:flex-end}
+footer .lnk{background:none;border:0;padding:0;font:inherit;color:var(--muted);text-decoration:underline;cursor:pointer}
+footer .lnk:hover{color:var(--ink)}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="ttl"><svg class="logo" viewBox="0 0 120 120" role="img" aria-label="Ícone S1QLBR"><rect width="120" height="120" rx="26" fill="#0B1F2A"/><path d="M24 51 A28 10 0 0 0 80 51 V70 A28 10 0 0 1 24 70 Z" fill="#B6F23A"/><ellipse cx="52" cy="32" rx="28" ry="10" fill="none" stroke="#E6F1F5" stroke-width="6"/><path d="M24 32 V88 A28 10 0 0 0 80 88 V32" fill="none" stroke="#E6F1F5" stroke-width="6" stroke-linejoin="round"/><path d="M24 51 A28 10 0 0 0 80 51 M24 70 A28 10 0 0 0 80 70" fill="none" stroke="#E6F1F5" stroke-width="6"/><circle cx="84" cy="84" r="16" fill="#0B1F2A" stroke="#B6F23A" stroke-width="7"/><path d="M95.5 95.5 L105 105" stroke="#B6F23A" stroke-width="8" stroke-linecap="round"/></svg><h1 class="wm" aria-label="S1QLBR">S1<span class="ql">QL</span><span class="br">BR</span></h1><span class="tag" id="tTag"></span></div>
+    <div class="tools"><label for="lang" hidden id="tLangLbl">Idioma</label><select id="lang" class="langsel"></select><button class="theme" id="tema"></button></div>
+    <p id="tIntro">Escreva em português o que quer caçar. O S1QLBR monta a query compatível com o Event Search do SentinelOne. Clique num campo para inserir na query.</p>
+  </header>
+
+  <div class="grid">
+    <section class="panel" aria-label="Gerador">
+      <h2 id="tAsk"></h2>
+      <label for="pedido" hidden>Pedido em linguagem natural</label>
+      <textarea id="pedido"></textarea>
+      <div class="row">
+        <button class="primary" id="gerar">Gerar query</button>
+        <button id="limpar">Limpar</button>
+        <span class="mode" id="mode">Motor: <b>regras locais</b></span>
+      </div>
+      <div class="engine">
+        <label for="motor" id="tEngine"></label>
+        <select id="motor"></select>
+        <button id="cfgBtn" aria-expanded="false">Configurar</button>
+      </div>
+      <div class="cfg" id="cfg" hidden>
+        <label class="fld" id="fKey"><span id="tKey"></span><input type="password" id="apiKey" autocomplete="off" placeholder="Cole sua chave aqui"></label>
+        <label class="fld"><span id="tModel"></span><input type="text" id="model" autocomplete="off"></label>
+        <label class="fld" id="fUrl"><span id="tUrl"></span><input type="text" id="baseUrl" autocomplete="off" placeholder="https://…/v1"></label>
+        <label class="chk"><input type="checkbox" id="remember"> <span id="tRemember"></span></label>
+        <p class="hint" id="cfgHint"></p>
+        <p class="hint" id="tPriv"></p>
+        <div class="row" style="margin-top:0"><button class="primary" id="cfgSave">Salvar</button><button id="cfgForget">Esquecer chaves</button></div>
+      </div>
+      <div class="examples" id="examples"></div>
+      <div class="status" id="status" hidden></div>
+
+      <div class="out">
+        <div class="qhead"><h2 id="tQuery"></h2><button id="copiar">Copiar</button></div>
+        <pre class="q" id="query" contenteditable="true" spellcheck="false" aria-label="Query gerada (editável)"></pre>
+        <ul class="notes" id="notes"></ul>
+      </div>
+    </section>
+
+    <aside class="panel" aria-label="Dicionário de campos">
+      <h2 id="tFields"></h2>
+      <label for="busca" hidden>Buscar campo</label>
+      <input type="search" id="busca" placeholder="Buscar: sha1, cmdline, porta, login…">
+      <div class="filters" id="filters"></div>
+      <div class="fields" id="fields"></div>
+    </aside>
+  </div>
+
+  <section class="panel">
+    <h2 id="tOps"></h2>
+    <div class="ops" id="ops"></div>
+  </section>
+
+  <section>
+    <h2 id="tRecipes"></h2>
+    <div class="recipes" id="recipes"></div>
+  </section>
+
+  <footer>
+    <span><b>S1QLBR</b> · s1qlbr.com · <span id="tFoot1"></span></span>
+    <span><span id="tFoot2"></span> <button class="lnk" id="cookieLink"></button></span>
+  </footer>
+</div>
+<div class="toast" id="toast" hidden></div>
+<div class="cookie" id="cookie" role="region" aria-labelledby="cookieTxt" hidden>
+  <p id="cookieTxt"></p>
+  <div class="row"><button class="primary" id="cookieOk"></button></div>
+</div>
+<dialog class="aviso" id="aviso" aria-labelledby="avisoT">
+  <h2 id="avisoT"></h2>
+  <ul id="avisoList"></ul>
+  <div class="row">
+    <button id="avisoNao">Cancelar</button>
+    <button class="primary" id="avisoSim">Concordo e continuar</button>
+  </div>
+</dialog>
+
+<script>
+// ===== Idiomas: pt (base), en, es, zh =====
+const LANGS = {pt:"PT", en:"EN", es:"ES", zh:"中文"};
+const HTML_LANG = {pt:"pt-BR", en:"en", es:"es", zh:"zh-CN"};
+const UI = {
+ pt:{
+  tagline:"Gerador de queries para threat hunting",
+  intro:"Escreva em português o que quer caçar. O S1QLBR monta a query compatível com o Event Search do SentinelOne. Clique num campo para inserir na query.",
+  ask:"O que você quer procurar?", gen:"Gerar query", clear:"Limpar", engine:"Motor de IA", cfg:"Configurar",
+  key:"Chave de API", keyPh:"Cole sua chave aqui", model:"Modelo", url:"URL base (API compatível com OpenAI)",
+  remember:"Lembrar chave neste navegador", privacy:"A chave fica só no seu navegador e vai direto para o provedor escolhido. Este site não recebe nem guarda nada.",
+  save:"Salvar", forget:"Esquecer chaves", query:"Query", copy:"Copiar", fields:"Campos do Event Search",
+  searchPh:"Buscar: sha1, cmdline, porta, login…", ops:"Operadores", recipes:"Receitas de caça (SOC)",
+  foot1:"gratuito e independente. Compatível com SentinelOne, sem vínculo com a empresa. SentinelOne e S1QL são marcas dos respectivos donos.",
+  foot2:"No modo sem IA, nada do que você digita sai do seu navegador. Com IA, o pedido vai para o provedor escolhido (nos motores grátis, passando pelo servidor do S1QLBR, sem ser gravado).",
+  cTxt:"Usamos cookies do Google Analytics para contar visitas e entender quais recursos são mais usados. O que você digita no gerador, suas chaves e as queries nunca vão para o Analytics.", cOk:"Fechar", cLink:"Cookies",
+  mTitle:"Antes de usar IA",
+  mItems:[["Se você usar sua própria chave,","ela vai direto do seu navegador para o provedor escolhido. Não guardamos a chave."],
+          ["Nos motores grátis do S1QLBR,","o pedido passa pelo nosso servidor só para chegar ao Google (Gemini) ou à Groq. Não gravamos o pedido nem a query."],
+          ["\"Lembrar chave\" salva só neste navegador.","Para apagar, use o botão \"Esquecer chaves\"."],
+          ["O pedido segue a política do provedor","(Google, Groq, OpenAI etc.). Em camadas gratuitas, o provedor pode usar os pedidos para melhorar os produtos dele. Não coloque dados de clientes."],
+          ["Custo:","os motores grátis não custam nada para você. Com sua própria chave, o uso é cobrado na sua conta do provedor."],
+          ["A IA pode errar.","Revise a query antes de rodar."]],
+  cancel:"Cancelar", agree:"Concordo e continuar", dark:"Escuro", light:"Claro", themeAria:"Alternar tema claro/escuro", langAria:"Idioma",
+  all:"Todos", insert:"Inserir", noField:"Nenhum campo com", use:"Usar", copied:"Copiado", selected:"Selecionado. Use Ctrl+C",
+  inserted:"Campo inserido", keptNoAi:"Mantido sem IA", keysErased:"Chaves apagadas deste navegador", cfgSaved:"Configuração salva",
+  defaultAsk:"powershell com comando encodado em servidores windows", hashPh:"\"cole/digite a hash aqui\"",
+  mode:"Motor", noKey:"(falta a chave)", getKey:"Pegue sua chave em", modelTip:"Se o modelo padrão sair de linha, troque o nome no campo Modelo.",
+  generating:"Gerando com", genBy:"Gerado por {n}. Revise antes de rodar.", usedRules:"Usei as regras locais.",
+  eKeyCfg:"Configure a chave de API do motor escolhido.", eModel:"Informe o nome do modelo.", eUrl:"Informe a URL base da API.",
+  e401:"Chave recusada pelo provedor. Confira se está certa e ativa.", e404:"Modelo \"{m}\" não encontrado nesse provedor. Troque o nome em Configurar.",
+  e429:"Limite de uso do provedor atingido. Espere um pouco ou troque de motor.", eStatus:"O provedor respondeu com erro {s}.",
+  eFormat:"A IA devolveu uma resposta fora do formato.", eOllama:"Não consegui falar com o Ollama. Ele está rodando com OLLAMA_ORIGINS=*?",
+  eConn:"Não consegui conectar ao provedor (rede ou bloqueio do navegador).", eAi:"Falha ao chamar a IA.", eJson:"A IA não devolveu JSON.",
+  writeSomething:"Escreva o que você quer procurar.", recipeNote:"Receita: {r}. Ajuste host, período e valores.",
+  nPeriod:"Período \"{p}\" vai no seletor de tempo do Event Search, não na query.", nTime:"O período vai no seletor de tempo do Event Search, não na query.",
+  nEpType:"Confira em FIELDS › endpoint.type os valores exatos do seu ambiente (server, desktop, laptop).",
+  nUnknown:"Não reconheci {w}. Busquei como texto no nome e na linha de comando do processo.",
+  nNone:"Não reconheci campos nesse pedido. Tente citar processo, host, hash, IP, domínio, usuário ou tipo (DNS, login, registro, arquivo).",
+  nMixed:"Pedido mistura vários tipos de evento. Confira se os campos usados existem em todos eles.",
+  nRules:"Gerado por regras locais: {n} condição(ões). Revise antes de rodar.",
+  nGroup:"O Event Search filtra grupo pelo ID, não pelo nome. Copie o ID do grupo \"{g}\" no painel Scopes (⋮ › Copy group ID) e troque ID_DO_GRUPO.",
+  nUnknownFile:"Busquei {w} no caminho dos arquivos.",
+  eFree_config:"O motor grátis não está configurado no servidor (s1qlbr-config.php não encontrado).",
+  eFree_bad_origin:"Este endereço não está autorizado em allowed_origins no s1qlbr-config.php.",
+  eFree_provider:"Motor grátis sem chave configurada no servidor.",
+  pFreeAuto:"Grátis · automático (Groq → Gemini)", pFreeGemini:"Grátis · Gemini", pFreeGroq:"Grátis · Groq", freeVia:"Gerado pelo motor grátis via {e}.",
+  eFree_rate_limited:"Você atingiu o limite de consultas grátis. Tente mais tarde ou use sua própria chave.",
+  eFree_quota:"A cota grátis de hoje acabou. Tente o outro motor grátis ou use sua própria chave.",
+  eFree_too_long:"Pedido longo demais para o motor grátis. Use até 300 caracteres.",
+  eFree_out_of_scope:"Isso não parece uma busca no SentinelOne. O motor grátis só gera queries.",
+  eFree_upstream:"O motor grátis não respondeu agora. Tente de novo em instantes.",
+  eFree_off:"O motor grátis não está disponível neste endereço.",
+  nIgnored:"Ignorei {w} porque não reconheci. Para buscar como texto, escreva entre aspas.",
+  pLocal:"Sem IA (regras locais)", pClaudeai:"Claude (conta claude.ai)", pGroq:"Groq (Llama e outros)", pOpenrouter:"OpenRouter (vários modelos)",
+  pOllama:"Ollama (local, sem chave)", pCustom:"Outra (compatível com OpenAI)",
+  dGemini:"O Google AI Studio costuma ter uma cota gratuita.", dGroq:"O Groq costuma ter uma cota gratuita.",
+  dOpenrouter:"Uma chave só dá acesso a centenas de modelos, alguns gratuitos (sufixo :free).",
+  dOllama:"Roda no seu PC. Inicie o Ollama com a variável OLLAMA_ORIGINS=* para o navegador conseguir acessar.",
+  dCustom:"Qualquer API no formato OpenAI: Mistral, Together, LM Studio, Azure etc.",
+  aiLang:"português do Brasil"
+ },
+ en:{
+  tagline:"Query builder for threat hunting",
+  intro:"Describe what you want to hunt in plain English. S1QLBR builds a query compatible with SentinelOne Event Search. Click a field to add it to the query.",
+  ask:"What do you want to find?", gen:"Build query", clear:"Clear", engine:"AI engine", cfg:"Settings",
+  key:"API key", keyPh:"Paste your key here", model:"Model", url:"Base URL (OpenAI-compatible API)",
+  remember:"Remember key in this browser", privacy:"Your key stays in your browser and goes straight to the provider you chose. This site never receives or stores anything.",
+  save:"Save", forget:"Forget keys", query:"Query", copy:"Copy", fields:"Event Search fields",
+  searchPh:"Search: sha1, cmdline, port, login…", ops:"Operators", recipes:"Hunting recipes (SOC)",
+  foot1:"free and independent. Compatible with SentinelOne, not affiliated with the company. SentinelOne and S1QL are trademarks of their respective owners.",
+  foot2:"In no-AI mode, nothing you type leaves your browser. With AI, the request goes to the chosen provider (on the free engines, through the S1QLBR server, without being stored).",
+  cTxt:"We use Google Analytics cookies to count visits and see which features are used most. What you type in the builder, your keys and your queries never go to Analytics.", cOk:"Close", cLink:"Cookies",
+  mTitle:"Before using AI",
+  mItems:[["If you use your own key,","it goes straight from your browser to the provider you chose. We don't store it."],
+          ["With the free S1QLBR engines,","your request passes through our server only to reach Google (Gemini) or Groq. We don't store the request or the query."],
+          ["\"Remember key\" saves it only in this browser.","To erase it, use the \"Forget keys\" button."],
+          ["Your request follows the provider's policy","(Google, Groq, OpenAI, etc.). On free tiers, the provider may use requests to improve its products. Don't include customer data."],
+          ["Cost:","the free engines cost you nothing. With your own key, usage is billed to your provider account."],
+          ["AI can be wrong.","Review the query before running it."]],
+  cancel:"Cancel", agree:"I agree, continue", dark:"Dark", light:"Light", themeAria:"Toggle light/dark theme", langAria:"Language",
+  all:"All", insert:"Insert", noField:"No field matching", use:"Use", copied:"Copied", selected:"Selected. Press Ctrl+C",
+  inserted:"Field inserted", keptNoAi:"Staying without AI", keysErased:"Keys erased from this browser", cfgSaved:"Settings saved",
+  defaultAsk:"encoded powershell command on windows servers", hashPh:"\"paste/type the hash here\"",
+  mode:"Engine", noKey:"(key missing)", getKey:"Get your key at", modelTip:"If the default model is retired, change the name in the Model field.",
+  generating:"Generating with", genBy:"Generated by {n}. Review before running.", usedRules:"Used the local rules instead.",
+  eKeyCfg:"Set the API key for the selected engine.", eModel:"Enter the model name.", eUrl:"Enter the API base URL.",
+  e401:"The provider rejected the key. Check that it is correct and active.", e404:"Model \"{m}\" not found at this provider. Change it in Settings.",
+  e429:"Provider usage limit reached. Wait a moment or switch engines.", eStatus:"The provider returned error {s}.",
+  eFormat:"The AI returned a response in the wrong format.", eOllama:"Couldn't reach Ollama. Is it running with OLLAMA_ORIGINS=*?",
+  eConn:"Couldn't connect to the provider (network or browser block).", eAi:"Failed to call the AI.", eJson:"The AI didn't return JSON.",
+  writeSomething:"Type what you want to find.", recipeNote:"Recipe: {r}. Adjust host, time range and values.",
+  nPeriod:"Time range \"{p}\" goes in the Event Search time picker, not in the query.", nTime:"The time range goes in the Event Search time picker, not in the query.",
+  nEpType:"Check FIELDS › endpoint.type for the exact values in your environment (server, desktop, laptop).",
+  nUnknown:"Didn't recognize {w}. Searched it as text in the process name and command line.",
+  nNone:"Couldn't recognize any field in this request. Try naming a process, host, hash, IP, domain, user or type (DNS, login, registry, file).",
+  nMixed:"The request mixes several event types. Check that the fields used exist in all of them.",
+  nRules:"Generated by local rules: {n} condition(s). Review before running.",
+  nGroup:"Event Search filters groups by ID, not by name. Copy the ID of group \"{g}\" in the Scopes panel (⋮ › Copy group ID) and replace GROUP_ID.",
+  nUnknownFile:"Searched {w} in file paths.",
+  eFree_config:"The free engine is not configured on the server (s1qlbr-config.php not found).",
+  eFree_bad_origin:"This address is not authorized in allowed_origins in s1qlbr-config.php.",
+  eFree_provider:"Free engine has no key configured on the server.",
+  pFreeAuto:"Free · automatic (Groq → Gemini)", pFreeGemini:"Free · Gemini", pFreeGroq:"Free · Groq", freeVia:"Generated by the free engine via {e}.",
+  eFree_rate_limited:"You reached the free query limit. Try again later or use your own key.",
+  eFree_quota:"Today's free quota is used up. Try the other free engine or use your own key.",
+  eFree_too_long:"Request too long for the free engine. Use up to 300 characters.",
+  eFree_out_of_scope:"That doesn't look like a SentinelOne search. The free engine only builds queries.",
+  eFree_upstream:"The free engine didn't respond. Try again in a moment.",
+  eFree_off:"The free engine isn't available at this address.",
+  nIgnored:"Ignored {w} (not recognized). Put it in quotes to search it as text.",
+  pLocal:"No AI (local rules)", pClaudeai:"Claude (claude.ai account)", pGroq:"Groq (Llama and others)", pOpenrouter:"OpenRouter (many models)",
+  pOllama:"Ollama (local, no key)", pCustom:"Other (OpenAI-compatible)",
+  dGemini:"Google AI Studio usually has a free tier.", dGroq:"Groq usually has a free tier.",
+  dOpenrouter:"One key gives access to hundreds of models, some free (:free suffix).",
+  dOllama:"Runs on your PC. Start Ollama with OLLAMA_ORIGINS=* so the browser can reach it.",
+  dCustom:"Any OpenAI-format API: Mistral, Together, LM Studio, Azure, etc.",
+  aiLang:"English"
+ },
+ es:{
+  tagline:"Generador de queries para threat hunting",
+  intro:"Escribe en español lo que quieres cazar. S1QLBR arma la query compatible con el Event Search de SentinelOne. Haz clic en un campo para insertarlo en la query.",
+  ask:"¿Qué quieres buscar?", gen:"Generar query", clear:"Limpiar", engine:"Motor de IA", cfg:"Configurar",
+  key:"Clave de API", keyPh:"Pega tu clave aquí", model:"Modelo", url:"URL base (API compatible con OpenAI)",
+  remember:"Recordar clave en este navegador", privacy:"La clave queda solo en tu navegador y va directo al proveedor elegido. Este sitio no recibe ni guarda nada.",
+  save:"Guardar", forget:"Olvidar claves", query:"Query", copy:"Copiar", fields:"Campos del Event Search",
+  searchPh:"Buscar: sha1, cmdline, puerto, login…", ops:"Operadores", recipes:"Recetas de caza (SOC)",
+  foot1:"gratuito e independiente. Compatible con SentinelOne, sin vínculo con la empresa. SentinelOne y S1QL son marcas de sus respectivos dueños.",
+  foot2:"En el modo sin IA, nada de lo que escribes sale de tu navegador. Con IA, el pedido va al proveedor elegido (en los motores gratis, pasando por el servidor de S1QLBR, sin guardarse).",
+  cTxt:"Usamos cookies de Google Analytics para contar visitas y ver qué funciones se usan más. Lo que escribes en el generador, tus claves y tus queries nunca van a Analytics.", cOk:"Cerrar", cLink:"Cookies",
+  mTitle:"Antes de usar IA",
+  mItems:[["Si usas tu propia clave,","va directo de tu navegador al proveedor que elegiste. No la guardamos."],
+          ["En los motores gratis de S1QLBR,","el pedido pasa por nuestro servidor solo para llegar a Google (Gemini) o a Groq. No guardamos el pedido ni la query."],
+          ["\"Recordar clave\" la guarda solo en este navegador.","Para borrarla, usa el botón \"Olvidar claves\"."],
+          ["El pedido sigue la política del proveedor","(Google, Groq, OpenAI, etc.). En capas gratuitas, el proveedor puede usar los pedidos para mejorar sus productos. No incluyas datos de clientes."],
+          ["Costo:","los motores gratis no te cuestan nada. Con tu propia clave, el uso se cobra en tu cuenta del proveedor."],
+          ["La IA puede equivocarse.","Revisa la query antes de ejecutarla."]],
+  cancel:"Cancelar", agree:"Acepto y continúo", dark:"Oscuro", light:"Claro", themeAria:"Cambiar tema claro/oscuro", langAria:"Idioma",
+  all:"Todos", insert:"Insertar", noField:"Ningún campo con", use:"Usar", copied:"Copiado", selected:"Seleccionado. Usa Ctrl+C",
+  inserted:"Campo insertado", keptNoAi:"Se mantiene sin IA", keysErased:"Claves borradas de este navegador", cfgSaved:"Configuración guardada",
+  defaultAsk:"powershell con comando codificado en servidores windows", hashPh:"\"pega/escribe el hash aquí\"",
+  mode:"Motor", noKey:"(falta la clave)", getKey:"Consigue tu clave en", modelTip:"Si el modelo por defecto deja de existir, cambia el nombre en el campo Modelo.",
+  generating:"Generando con", genBy:"Generado por {n}. Revisa antes de ejecutar.", usedRules:"Usé las reglas locales.",
+  eKeyCfg:"Configura la clave de API del motor elegido.", eModel:"Indica el nombre del modelo.", eUrl:"Indica la URL base de la API.",
+  e401:"El proveedor rechazó la clave. Verifica que sea correcta y esté activa.", e404:"Modelo \"{m}\" no encontrado en este proveedor. Cámbialo en Configurar.",
+  e429:"Se alcanzó el límite de uso del proveedor. Espera un poco o cambia de motor.", eStatus:"El proveedor respondió con error {s}.",
+  eFormat:"La IA devolvió una respuesta fuera de formato.", eOllama:"No pude conectar con Ollama. ¿Está corriendo con OLLAMA_ORIGINS=*?",
+  eConn:"No pude conectar con el proveedor (red o bloqueo del navegador).", eAi:"Falló la llamada a la IA.", eJson:"La IA no devolvió JSON.",
+  writeSomething:"Escribe lo que quieres buscar.", recipeNote:"Receta: {r}. Ajusta host, período y valores.",
+  nPeriod:"El período \"{p}\" va en el selector de tiempo del Event Search, no en la query.", nTime:"El período va en el selector de tiempo del Event Search, no en la query.",
+  nEpType:"Verifica en FIELDS › endpoint.type los valores exactos de tu entorno (server, desktop, laptop).",
+  nUnknown:"No reconocí {w}. Lo busqué como texto en el nombre y la línea de comandos del proceso.",
+  nNone:"No reconocí campos en este pedido. Intenta mencionar proceso, host, hash, IP, dominio, usuario o tipo (DNS, login, registro, archivo).",
+  nMixed:"El pedido mezcla varios tipos de evento. Verifica que los campos usados existan en todos.",
+  nRules:"Generado por reglas locales: {n} condición(es). Revisa antes de ejecutar.",
+  nGroup:"El Event Search filtra el grupo por ID, no por nombre. Copia el ID del grupo \"{g}\" en el panel Scopes (⋮ › Copy group ID) y reemplaza ID_DEL_GRUPO.",
+  nUnknownFile:"Busqué {w} en la ruta de los archivos.",
+  eFree_config:"El motor gratis no está configurado en el servidor (no se encontró s1qlbr-config.php).",
+  eFree_bad_origin:"Esta dirección no está autorizada en allowed_origins de s1qlbr-config.php.",
+  eFree_provider:"El motor gratis no tiene clave configurada en el servidor.",
+  pFreeAuto:"Gratis · automático (Groq → Gemini)", pFreeGemini:"Gratis · Gemini", pFreeGroq:"Gratis · Groq", freeVia:"Generado por el motor gratis vía {e}.",
+  eFree_rate_limited:"Alcanzaste el límite de consultas gratis. Intenta más tarde o usa tu propia clave.",
+  eFree_quota:"Se acabó la cuota gratis de hoy. Prueba el otro motor gratis o usa tu propia clave.",
+  eFree_too_long:"Pedido demasiado largo para el motor gratis. Usa hasta 300 caracteres.",
+  eFree_out_of_scope:"Eso no parece una búsqueda en SentinelOne. El motor gratis solo genera queries.",
+  eFree_upstream:"El motor gratis no respondió. Intenta de nuevo en un momento.",
+  eFree_off:"El motor gratis no está disponible en esta dirección.",
+  nIgnored:"Ignoré {w} porque no lo reconocí. Para buscarlo como texto, escríbelo entre comillas.",
+  pLocal:"Sin IA (reglas locales)", pClaudeai:"Claude (cuenta claude.ai)", pGroq:"Groq (Llama y otros)", pOpenrouter:"OpenRouter (varios modelos)",
+  pOllama:"Ollama (local, sin clave)", pCustom:"Otra (compatible con OpenAI)",
+  dGemini:"Google AI Studio suele tener una cuota gratuita.", dGroq:"Groq suele tener una cuota gratuita.",
+  dOpenrouter:"Una sola clave da acceso a cientos de modelos, algunos gratuitos (sufijo :free).",
+  dOllama:"Corre en tu PC. Inicia Ollama con OLLAMA_ORIGINS=* para que el navegador pueda acceder.",
+  dCustom:"Cualquier API en formato OpenAI: Mistral, Together, LM Studio, Azure, etc.",
+  aiLang:"español"
+ },
+ zh:{
+  tagline:"威胁狩猎查询生成器",
+  intro:"用中文描述你要狩猎的内容。S1QLBR 会生成兼容 SentinelOne Event Search 的查询语句。点击字段即可插入查询。",
+  ask:"你想查找什么？", gen:"生成查询", clear:"清空", engine:"AI 引擎", cfg:"设置",
+  key:"API 密钥", keyPh:"在此粘贴密钥", model:"模型", url:"基础 URL（OpenAI 兼容 API）",
+  remember:"在此浏览器中记住密钥", privacy:"密钥只保存在你的浏览器中，并直接发送给你选择的提供商。本站不接收也不存储任何内容。",
+  save:"保存", forget:"清除密钥", query:"查询", copy:"复制", fields:"Event Search 字段",
+  searchPh:"搜索：sha1、cmdline、端口、登录…", ops:"运算符", recipes:"狩猎示例（SOC）",
+  foot1:"免费且独立。兼容 SentinelOne，与该公司无关联。SentinelOne 和 S1QL 是其各自所有者的商标。",
+  foot2:"不使用 AI 时，你输入的任何内容都不会离开浏览器。使用 AI 时，请求会发送给所选提供商（免费引擎会经过 S1QLBR 服务器转发，不会被保存）。",
+  cTxt:"我们使用 Google Analytics Cookie 统计访问量并了解哪些功能最常用。你在生成器中输入的内容、密钥和查询永远不会发送给 Analytics。", cOk:"关闭", cLink:"Cookie",
+  mTitle:"使用 AI 之前",
+  mItems:[["如果使用你自己的密钥，","密钥会直接从你的浏览器发送给所选提供商。我们不存储密钥。"],
+          ["使用 S1QLBR 免费引擎时，","请求仅经过我们的服务器转发给 Google（Gemini）或 Groq。我们不保存请求或查询。"],
+          ["“记住密钥”只保存在此浏览器中。","如需删除，请点击“清除密钥”按钮。"],
+          ["请求遵循提供商的政策","（Google、Groq、OpenAI 等）。在免费套餐中，提供商可能会使用请求来改进其产品。请不要输入客户数据。"],
+          ["费用：","免费引擎对你不收费。使用自己的密钥时，费用计入你的提供商账户。"],
+          ["AI 可能出错。","运行前请检查查询语句。"]],
+  cancel:"取消", agree:"同意并继续", dark:"深色", light:"浅色", themeAria:"切换浅色/深色主题", langAria:"语言",
+  all:"全部", insert:"插入", noField:"没有匹配的字段：", use:"使用", copied:"已复制", selected:"已选中，请按 Ctrl+C",
+  inserted:"已插入字段", keptNoAi:"保持不使用 AI", keysErased:"已从此浏览器清除密钥", cfgSaved:"设置已保存",
+  defaultAsk:"Windows 服务器上的 powershell 编码命令", hashPh:"“在此粘贴/输入哈希”",
+  mode:"引擎", noKey:"（缺少密钥）", getKey:"在此获取密钥：", modelTip:"如果默认模型下线，请在“模型”字段中修改名称。",
+  generating:"正在使用以下引擎生成：", genBy:"由 {n} 生成。运行前请检查。", usedRules:"已改用本地规则。",
+  eKeyCfg:"请设置所选引擎的 API 密钥。", eModel:"请输入模型名称。", eUrl:"请输入 API 基础 URL。",
+  e401:"提供商拒绝了该密钥。请确认密钥正确且有效。", e404:"该提供商找不到模型“{m}”。请在设置中修改。",
+  e429:"已达到提供商的使用上限。请稍后再试或更换引擎。", eStatus:"提供商返回错误 {s}。",
+  eFormat:"AI 返回的格式不正确。", eOllama:"无法连接 Ollama。是否已使用 OLLAMA_ORIGINS=* 启动？",
+  eConn:"无法连接到提供商（网络问题或被浏览器拦截）。", eAi:"调用 AI 失败。", eJson:"AI 没有返回 JSON。",
+  writeSomething:"请输入你要查找的内容。", recipeNote:"示例：{r}。请调整主机、时间范围和值。",
+  nPeriod:"时间范围“{p}”请在 Event Search 的时间选择器中设置，不写在查询里。", nTime:"时间范围请在 Event Search 的时间选择器中设置，不写在查询里。",
+  nEpType:"请在 FIELDS › endpoint.type 中确认你环境中的实际值（server、desktop、laptop）。",
+  nUnknown:"未识别 {w}，已作为文本在进程名称和命令行中搜索。",
+  nNone:"未能从请求中识别字段。请尝试提及进程、主机、哈希、IP、域名、用户或类型（DNS、登录、注册表、文件）。",
+  nMixed:"请求包含多种事件类型。请确认所用字段在所有类型中都存在。",
+  nRules:"由本地规则生成：{n} 个条件。运行前请检查。",
+  nGroup:"Event Search 按 ID 而不是名称筛选组。请在 Scopes 面板（⋮ › Copy group ID）中复制组“{g}”的 ID，并替换 GROUP_ID。",
+  nUnknownFile:"已在文件路径中搜索 {w}。",
+  eFree_config:"服务器未配置免费引擎（找不到 s1qlbr-config.php）。",
+  eFree_bad_origin:"此地址未在 s1qlbr-config.php 的 allowed_origins 中授权。",
+  eFree_provider:"服务器上未为免费引擎配置密钥。",
+  pFreeAuto:"免费 · 自动（Groq → Gemini）", pFreeGemini:"免费 · Gemini", pFreeGroq:"免费 · Groq", freeVia:"由免费引擎通过 {e} 生成。",
+  eFree_rate_limited:"已达到免费查询上限。请稍后再试或使用自己的密钥。",
+  eFree_quota:"今天的免费额度已用完。请尝试另一个免费引擎或使用自己的密钥。",
+  eFree_too_long:"请求对免费引擎来说太长。请控制在 300 个字符以内。",
+  eFree_out_of_scope:"这看起来不像 SentinelOne 搜索。免费引擎只生成查询。",
+  eFree_upstream:"免费引擎暂时没有响应。请稍后再试。",
+  eFree_off:"此地址无法使用免费引擎。",
+  nIgnored:"已忽略无法识别的 {w}。如需按文本搜索，请加上引号。",
+  pLocal:"不使用 AI（本地规则）", pClaudeai:"Claude（claude.ai 账户）", pGroq:"Groq（Llama 等）", pOpenrouter:"OpenRouter（多种模型）",
+  pOllama:"Ollama（本地，无需密钥）", pCustom:"其他（OpenAI 兼容）",
+  dGemini:"Google AI Studio 通常提供免费额度。", dGroq:"Groq 通常提供免费额度。",
+  dOpenrouter:"一个密钥即可使用数百个模型，部分免费（后缀 :free）。",
+  dOllama:"在你的电脑上运行。启动 Ollama 时设置 OLLAMA_ORIGINS=*，浏览器才能访问。",
+  dCustom:"任何 OpenAI 格式的 API：Mistral、Together、LM Studio、Azure 等。",
+  aiLang:"简体中文"
+ }
+};
+
+const CAT_I18N = {
+ pt:{Geral:"Geral", Proc:"Processo origem (src)", Tgt:"Processo alvo (tgt)", Arq:"Arquivo", Rede:"Rede / DNS / URL", Reg:"Registro", Login:"Login", Ind:"Indicadores", Outros:"Tarefa / Módulo / Script"},
+ en:{Geral:"General", Proc:"Source process (src)", Tgt:"Target process (tgt)", Arq:"File", Rede:"Network / DNS / URL", Reg:"Registry", Login:"Login", Ind:"Indicators", Outros:"Task / Module / Script"},
+ es:{Geral:"General", Proc:"Proceso origen (src)", Tgt:"Proceso destino (tgt)", Arq:"Archivo", Rede:"Red / DNS / URL", Reg:"Registro", Login:"Login", Ind:"Indicadores", Outros:"Tarea / Módulo / Script"},
+ zh:{Geral:"通用", Proc:"源进程 (src)", Tgt:"目标进程 (tgt)", Arq:"文件", Rede:"网络 / DNS / URL", Reg:"注册表", Login:"登录", Ind:"指标", Outros:"任务 / 模块 / 脚本"}
+};
+
+// descrições dos campos, na mesma ordem de FIELDS (pt fica no próprio FIELDS)
+const FIELD_I18N = {
+ en:["Event type. Almost every query starts here.","Category: process, file, registry, ip, dns, url, logins, indicators, scheduled_task, command_script.","Host name.","Operating system: windows, linux, osx.","Agent UUID.","Customer site.","Name of the process that generated the event.","Command line of the source process.","Executable path.","Executable SHA1.","Executable SHA256.","Executable MD5.","User who ran it (DOMAIN\\user).","PID.","Process storyline. Copy the ID from the alert in the console.","Digital signature publisher.","signed / unsigned.","verified / unverified.","LOW, MEDIUM, HIGH, SYSTEM.","true if it is the storyline root.","Name of the source process's parent.","Parent command line.","Parent path.","Created (child) process or cross-process target.","Command line of the created process.","Path of the created process.","SHA1 of the created process.","SHA256 of the created process.","User of the created process.","Storyline of the created process.","signed / unsigned.","Path of the created/modified/deleted file.","File SHA1.","File SHA256.","File MD5.","Extension without the dot.","Previous path (File Rename).","Size in bytes.","true if executable.","Source IP.","Source port.","Destination IP.","Destination port.","INCOMING / OUTGOING.","Protocol (tcp, udp…).","SUCCESS / FAILURE.","Queried domain.","DNS response (IPs).","Accessed URL (GET/POST events).","Key path.","Written value.","Logon user.","NETWORK, INTERACTIVE, REMOTE_INTERACTIVE (RDP)…","true / false.","Logon with admin privileges.","IP the logon came from.","Behavioral indicator name.","Category (Persistence, Evasion, Discovery…).","Indicator description.","Details (includes MITRE technique).","Scheduled task name.","Scheduled task path.","Loaded DLL (Module Load).","DLL SHA1.","Script content (PowerShell/AMSI).","Group ID. Event Search filters groups by ID, not by name."],
+ es:["Tipo de evento. Casi toda query empieza aquí.","Categoría: process, file, registry, ip, dns, url, logins, indicators, scheduled_task, command_script.","Nombre del host.","Sistema operativo: windows, linux, osx.","UUID del agente.","Site del cliente.","Nombre del proceso que generó el evento.","Línea de comandos del proceso origen.","Ruta del ejecutable.","SHA1 del ejecutable.","SHA256 del ejecutable.","MD5 del ejecutable.","Usuario que lo ejecutó (DOMINIO\\usuario).","PID.","Storyline del proceso. Copia el ID de la alerta en la consola.","Editor de la firma digital.","signed / unsigned.","verified / unverified.","LOW, MEDIUM, HIGH, SYSTEM.","true si es la raíz del storyline.","Nombre del padre del proceso origen.","Línea de comandos del padre.","Ruta del padre.","Proceso creado (hijo) o destino de cross-process.","Línea de comandos del proceso creado.","Ruta del proceso creado.","SHA1 del proceso creado.","SHA256 del proceso creado.","Usuario del proceso creado.","Storyline del proceso creado.","signed / unsigned.","Ruta del archivo creado/modificado/borrado.","SHA1 del archivo.","SHA256 del archivo.","MD5 del archivo.","Extensión sin punto.","Ruta anterior (File Rename).","Tamaño en bytes.","true si es ejecutable.","IP de origen.","Puerto de origen.","IP de destino.","Puerto de destino.","INCOMING / OUTGOING.","Protocolo (tcp, udp…).","SUCCESS / FAILURE.","Dominio consultado.","Respuesta del DNS (IPs).","URL accedida (eventos GET/POST).","Ruta de la clave.","Valor escrito.","Usuario del logon.","NETWORK, INTERACTIVE, REMOTE_INTERACTIVE (RDP)…","true / false.","Logon con privilegios de administrador.","IP desde donde vino el logon.","Nombre del indicador de comportamiento.","Categoría (Persistence, Evasion, Discovery…).","Descripción del indicador.","Detalles (incluye técnica MITRE).","Nombre de la tarea programada.","Ruta de la tarea programada.","DLL cargada (Module Load).","SHA1 de la DLL.","Contenido del script (PowerShell/AMSI).","ID del grupo. El Event Search filtra el grupo por ID, no por nombre."],
+ zh:["事件类型。几乎所有查询都从这里开始。","类别：process、file、registry、ip、dns、url、logins、indicators、scheduled_task、command_script。","主机名。","操作系统：windows、linux、osx。","代理 UUID。","客户站点。","生成该事件的进程名称。","源进程的命令行。","可执行文件路径。","可执行文件 SHA1。","可执行文件 SHA256。","可执行文件 MD5。","执行该进程的用户（域\\用户）。","PID。","进程的 Storyline。从控制台告警中复制 ID。","数字签名发布者。","signed / unsigned。","verified / unverified。","LOW、MEDIUM、HIGH、SYSTEM。","是否为 Storyline 根进程。","源进程的父进程名称。","父进程命令行。","父进程路径。","被创建的（子）进程或跨进程操作的目标。","被创建进程的命令行。","被创建进程的路径。","被创建进程的 SHA1。","被创建进程的 SHA256。","被创建进程的用户。","被创建进程的 Storyline。","signed / unsigned。","被创建/修改/删除文件的路径。","文件 SHA1。","文件 SHA256。","文件 MD5。","不带点的扩展名。","原路径（File Rename）。","大小（字节）。","是否为可执行文件。","源 IP。","源端口。","目标 IP。","目标端口。","INCOMING / OUTGOING。","协议（tcp、udp…）。","SUCCESS / FAILURE。","查询的域名。","DNS 响应（IP）。","访问的 URL（GET/POST 事件）。","注册表键路径。","写入的值。","登录用户。","NETWORK、INTERACTIVE、REMOTE_INTERACTIVE（RDP）…","true / false。","具有管理员权限的登录。","登录来源 IP。","行为指标名称。","类别（Persistence、Evasion、Discovery…）。","指标描述。","详细信息（包含 MITRE 技术）。","计划任务名称。","计划任务路径。","加载的 DLL（Module Load）。","DLL 的 SHA1。","脚本内容（PowerShell/AMSI）。","组 ID。Event Search 按 ID 而不是名称筛选组。"]
+};
+
+// placeholders que aparecem em exemplos e receitas
+const PH_I18N = {
+ en:{COLE_A_HASH_AQUI:"PASTE_HASH_HERE", COLE_AQUI:"PASTE_HERE", NOME_DO_HOST:"HOST_NAME", ID_DO_STORYLINE:"STORYLINE_ID", ID_DO_GRUPO:"GROUP_ID", "Nome do Site":"Site Name", "joao.silva":"john.smith"},
+ es:{COLE_A_HASH_AQUI:"PEGA_EL_HASH_AQUI", COLE_AQUI:"PEGAR_AQUI", NOME_DO_HOST:"NOMBRE_DEL_HOST", ID_DO_STORYLINE:"ID_DEL_STORYLINE", ID_DO_GRUPO:"ID_DEL_GRUPO", "Nome do Site":"Nombre del Site", "joao.silva":"juan.perez"},
+ zh:{COLE_A_HASH_AQUI:"PASTE_HASH_HERE", COLE_AQUI:"PASTE_HERE", NOME_DO_HOST:"HOST_NAME", ID_DO_STORYLINE:"STORYLINE_ID", ID_DO_GRUPO:"GROUP_ID", "Nome do Site":"Site Name", "joao.silva":"zhang.wei"}
+};
+
+const OPS_I18N = {
+ en:["equal / not equal (case-sensitive)","contains the text","contains, ignoring case. Use it by default for names and paths.","any value in the list: event.type in ('File Creation','File Rename')","list, ignoring case","contains any item in the list","regex: tgt.file.path matches '.*\\\\Temp\\\\[a-z]{8}\\.exe'","combinators. Use parentheses when mixing and with or.","numbers: tgt.file.size > 5000000","PowerQuery: group and count (new console / PowerQuery mode)","sort descending and limit"],
+ es:["igual / distinto (sensible a mayúsculas)","contiene el texto","contiene, ignorando mayúsculas. Úsalo por defecto en nombres y rutas.","cualquier valor de la lista: event.type in ('File Creation','File Rename')","lista ignorando mayúsculas","contiene cualquiera de la lista","regex: tgt.file.path matches '.*\\\\Temp\\\\[a-z]{8}\\.exe'","combinadores. Usa paréntesis al mezclar and con or.","números: tgt.file.size > 5000000","PowerQuery: agrupa y cuenta (consola nueva / modo PowerQuery)","ordena descendente y limita"],
+ zh:["等于 / 不等于（区分大小写）","包含该文本","包含，忽略大小写。名称和路径默认使用此运算符。","列表中的任一值：event.type in ('File Creation','File Rename')","列表，忽略大小写","包含列表中的任一项","正则：tgt.file.path matches '.*\\\\Temp\\\\[a-z]{8}\\.exe'","组合运算符。混用 and 和 or 时请加括号。","数字：tgt.file.size > 5000000","PowerQuery：分组并计数（新控制台 / PowerQuery 模式）","降序排序并限制数量"]
+};
+
+const RECIPES_I18N = {
+ en:[["Encoded PowerShell","-enc / -encodedcommand commands."],["Office spawning a shell","Word/Excel launching cmd, PowerShell, wscript."],["Executable in user folders","Binaries running from Temp, AppData, Downloads."],["Persistence via Run key","Writes to Run/RunOnce keys."],["Scheduled task created","New scheduled tasks."],["Deleting shadow copies","vssadmin, wmic shadowcopy, bcdedit."],["RDP logon","Remote interactive logons."],["Failed logons","Possible brute force."],["Everything in a storyline","Paste the storyline from the alert."],["Host telemetry (24h)","Checks whether the agent is sending data."],["Remote access tools","AnyDesk, TeamViewer, ngrok, etc."],["LOLBins downloading files","certutil, bitsadmin, curl."]],
+ es:[["PowerShell codificado","Comandos -enc / -encodedcommand."],["Office abriendo una shell","Word/Excel lanzando cmd, PowerShell, wscript."],["Ejecutable en carpeta de usuario","Binarios ejecutándose desde Temp, AppData, Downloads."],["Persistencia vía Run key","Escritura en claves Run/RunOnce."],["Tarea programada creada","Nuevas tareas programadas."],["Borrar shadow copies","vssadmin, wmic shadowcopy, bcdedit."],["Logon RDP","Logons remotos interactivos."],["Logons fallidos","Posible fuerza bruta."],["Todo un storyline","Pega el storyline de la alerta."],["Telemetría del host (24h)","Valida si el agente está enviando datos."],["Herramientas de acceso remoto","AnyDesk, TeamViewer, ngrok, etc."],["LOLBins descargando archivos","certutil, bitsadmin, curl."]],
+ zh:[["编码的 PowerShell","-enc / -encodedcommand 命令。"],["Office 启动 Shell","Word/Excel 启动 cmd、PowerShell、wscript。"],["用户目录中的可执行文件","从 Temp、AppData、Downloads 运行的程序。"],["通过 Run 键持久化","写入 Run/RunOnce 注册表键。"],["创建计划任务","新建的计划任务。"],["删除卷影副本","vssadmin、wmic shadowcopy、bcdedit。"],["RDP 登录","远程交互式登录。"],["登录失败","可能的暴力破解。"],["某个 Storyline 的全部事件","粘贴告警中的 Storyline。"],["主机遥测（24 小时）","检查代理是否在发送数据。"],["远程访问工具","AnyDesk、TeamViewer、ngrok 等。"],["LOLBins 下载文件","certutil、bitsadmin、curl。"]]
+};
+
+const EXAMPLES_I18N = {
+ pt:["arquivos .exe criados em Temp ou AppData","conexões de saída para as portas 4444 e 8080","falhas de login RDP do usuário administrador e contar por IP","rundll32 iniciado por winword","dns para ngrok.io ou anydesk.com","servidores windows com php"],
+ en:[".exe files created in Temp or AppData","outbound connections to ports 4444 and 8080","failed RDP logins for user administrator, count by IP","rundll32 spawned by winword","dns for ngrok.io or anydesk.com","windows servers with php"],
+ es:["archivos .exe creados en Temp o AppData","conexiones salientes a los puertos 4444 y 8080","logins RDP fallidos del usuario administrador y contar por IP","rundll32 iniciado por winword","dns para ngrok.io o anydesk.com","servidores windows con php"],
+ zh:["在 Temp 或 AppData 中创建的 .exe 文件","到 4444 和 8080 端口的出站连接","用户 administrator 的 RDP 登录失败，按 IP 统计","由 winword 启动的 rundll32","ngrok.io 或 anydesk.com 的 DNS 查询","有 php 的 Windows 服务器"]
+};
+const HASH_CHIP = {pt:"hash", en:"hash", es:"hash", zh:"哈希"};
+
+// Léxico: traduz palavras-chave de EN/ES/ZH para o vocabulário que o motor de regras entende
+const LEX = [
+ [/\bsistemas? operaciona(l|is)\b/g," "],[/\boperating systems?\b/g," "],[/\bsistemas? operativos?\b/g," "],[/\b(so|os)\b(?= *(windows|linux|mac))/g," "],
+ ["操作系统"," "],["文件夹"," pasta "],["目录"," diretorio "],["路径"," caminho "],
+ // chinês (sem espaços: troca por palavra cercada de espaços)
+ ["父进程"," pai "],["子进程"," filho "],["进程"," processo "],["命令行"," linha de comando "],["命令"," comando "],["编码"," encodado "],
+ ["由"," iniciado por "],["启动的"," executou "],["执行"," executou "],["运行"," executou "],["启动"," executou "],
+ ["计划任务"," tarefa agendada "],["注册表"," registro "],["持久化"," persistencia "],["开机启动"," inicializacao run "],["自启动"," inicializacao run "],
+ ["服务器"," servidores "],["工作站"," estacoes "],["笔记本"," notebook "],["终端"," estacoes "],["主机"," host "],["机器"," maquina "],
+ ["管理员用户"," usuario administrador "],["用户"," usuario "],["账户"," conta "],["账号"," conta "],
+ ["远程桌面"," rdp "],["远程"," remoto "],["暴力破解"," forca bruta "],["登录失败"," login falha "],["登陆"," login "],["登录"," login "],["失败"," falha "],
+ ["出站"," saida "],["外连"," saida "],["外部"," externo "],["连接"," conexao "],["网络"," rede "],["端口"," porta "],["域名"," dominio "],["网址"," url "],["网站"," site "],
+ ["哈希"," hash "],["未签名"," nao assinado "],["无签名"," nao assinado "],["签名"," assinatura "],
+ ["创建的"," criado "],["创建"," criado "],["新建"," criado "],["写入"," criado "],["删除"," apagado "],["重命名"," renomeado "],["修改"," modificado "],["文件"," arquivo "],
+ ["加载"," carregou "],["模块"," modulo "],["指标"," indicador "],["行为"," comportamento "],["脚本内容"," script conteudo "],["脚本"," script "],
+ ["统计"," contar "],["计数"," contar "],["多少"," quantos "],["排名"," top "],["分组"," agrupar "],["组"," grupo "],["按"," por "],
+ ["最近"," ultimas "],["过去"," ultimas "],["今天"," hoje "],["昨天"," ontem "],["小时"," horas "],["天"," dias "],["分钟"," minutos "],
+ ["在"," em "],["或"," ou "],["和"," e "],["与"," e "],["及"," e "],
+ // inglês
+ [/\bscheduled tasks?\b/g," tarefa agendada "],[/\bcommand[- ]lines?\b/g," linha de comando "],[/\b(spawned|launched|started|opened|executed|created) by\b/g," iniciado por "],
+ [/\bparent\b/g," pai "],[/\bchild\b/g," filho "],[/\bprocess(es)?\b/g," processo "],[/\b(ran|run by|running|launched|spawned|started)\b/g," executou "],
+ [/\bexecutables?\b/g," .exe "],[/\bfiles?\b/g," arquivo "],[/\b(created|written|dropped)\b/g," criado "],[/\b(deleted|removed)\b/g," apagado "],[/\brenamed\b/g," renomeado "],[/\b(modified|changed)\b/g," modificado "],
+ [/\b(outbound|outgoing|egress)\b/g," saida "],[/\bexternal\b/g," externo "],[/\bconnections?\b/g," conexao "],[/\bnetwork\b/g," rede "],[/\bports?\b/g," porta "],[/\bdomains?\b/g," dominio "],[/\bwebsites?\b/g," site "],
+ [/\bregistry keys?\b/g," registro chave "],[/\bstartup\b/g," inicializacao run "],[/\bfailed\b|\bfailures?\b/g," falha "],[/\bbrute[- ]?force\b/g," forca bruta "],[/\bsign[- ]?ins?\b/g," login "],
+ [/\b(users?|accounts?)\b/g," usuario "],[/\bmachines?\b/g," maquina "],[/\bcomputers?\b/g," computador "],[/\bon\b/g," em "],
+ [/\bnot signed\b|\bwithout signature\b/g," nao assinado "],[/\bindicators?\b/g," indicador "],[/\bmodules?\b/g," modulo "],[/\bloaded\b/g," carregou "],
+ [/\bhow many\b/g," quantos "],[/\bcount\b/g," contar "],[/\bgroup(ed)? by\b/g," agrupar por "],[/\bmost frequent\b/g," mais frequente "],[/\bby\b/g," por "],
+ [/\blast\b/g," ultimas "],[/\bhours?\b/g," horas "],[/\bdays?\b/g," dias "],[/\bminutes?\b/g," minutos "],[/\btoday\b/g," hoje "],[/\byesterday\b/g," ontem "],[/\bweek\b/g," semana "],
+ [/\band\b/g," e "],[/\bor\b/g," ou "],
+ // espanhol (texto já sem acento)
+ [/\btareas? programadas?\b/g," tarefa agendada "],[/\blineas? de comandos?\b/g," linha de comando "],[/\b(lanzad[oa]|abiert[oa]|ejecutad[oa]) por\b/g," iniciado por "],
+ [/\bpadre\b/g," pai "],[/\bhijo\b/g," filho "],[/\bproceso(s)?\b/g," processo "],[/\b(ejecut\w*)\b/g," executou "],
+ [/\barchivos?\b/g," arquivo "],[/\b(cread[oa]s?|escrit[oa]s?)\b/g," criado "],[/\b(eliminad[oa]s?|borrad[oa]s?)\b/g," apagado "],[/\brenombrad[oa]s?\b/g," renomeado "],
+ [/\b(salientes?|salida)\b/g," saida "],[/\bconexion(es)?\b/g," conexao "],[/\bred\b/g," rede "],[/\bpuertos?\b/g," porta "],[/\bsitios?\b/g," site "],[/\bclaves?\b/g," chave "],
+ [/\bfallid[oa]s?\b|\bfallos?\b/g," falha "],[/\bfuerza bruta\b/g," forca bruta "],[/\binicios? de sesion\b/g," login "],[/\bcuentas?\b/g," conta "],[/\bequipos?\b/g," computador "],
+ [/\bno firmad[oa]s?\b|\bsin firma\b/g," nao assinado "],[/\bcodificad[oa]s?\b/g," encodado "],[/\bcargad[oa]s?\b/g," carregou "],
+ [/\bestacion(es)? de trabajo\b/g," estacoes "],[/\bcuant[oa]s\b/g," quantos "],[/\bhoy\b/g," hoje "],[/\bayer\b/g," ontem "],[/\ben\b/g," em "],[/\by\b/g," e "],[/\bo\b/g," ou "]
+];
+function traduzPedido(txt){
+  let s = " " + String(txt).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase() + " ";
+  // protege hashes, IPs, domínios e trechos entre aspas
+  const keep = [];
+  s = s.replace(/["“'][^"”']{2,}["”']|\b[0-9a-f]{32,64}\b|\b(?:[a-z0-9-]+\.)+[a-z]{2,}\b|\b\d{1,3}(?:\.\d{1,3}){3}\b/g, m => { keep.push(m); return " \u0000"+(keep.length-1)+"\u0000 "; });
+  for(const [a,b] of LEX){ s = typeof a==="string" ? s.split(a).join(b) : s.replace(a,b); }
+  s = s.replace(/\u0000(\d+)\u0000/g,(m,i)=>keep[+i]).replace(/[，。、：；！？（）]/g," ").replace(/\s+/g," ");
+  return s.trim();
+}
+
+</script>
+<script>
+// ===== Dicionário de campos (Deep Visibility / S1QL) =====
+const CAT = {
+  Geral:"Geral", Proc:"Processo origem (src)", Tgt:"Processo alvo (tgt)", Arq:"Arquivo", Rede:"Rede / DNS / URL",
+  Reg:"Registro", Login:"Login", Ind:"Indicadores", Outros:"Tarefa / Módulo / Script"
+};
+const FIELDS = [
+ ["event.type","Geral","Tipo do evento. Quase toda query começa por aqui.","event.type = 'Process Creation'"],
+ ["event.category","Geral","Categoria: process, file, registry, ip, dns, url, logins, indicators, scheduled_task, command_script.","event.category = 'dns'"],
+ ["endpoint.name","Geral","Nome do host.","endpoint.name contains:anycase 'SRV-WEB01'"],
+ ["endpoint.os","Geral","Sistema: windows, linux, osx.","endpoint.os = 'windows'"],
+ ["agent.uuid","Geral","UUID do agente.","agent.uuid = '…'"],
+ ["site.name","Geral","Site do cliente.","site.name = 'Nome do Site'"],
+ ["src.process.name","Proc","Nome do processo que gerou o evento.","src.process.name = 'powershell.exe'"],
+ ["src.process.cmdline","Proc","Linha de comando do processo origem.","src.process.cmdline contains:anycase '-enc'"],
+ ["src.process.image.path","Proc","Caminho do executável.","src.process.image.path contains:anycase '\\AppData\\'"],
+ ["src.process.image.sha1","Proc","SHA1 do executável.","src.process.image.sha1 = 'COLE_A_HASH_AQUI'"],
+ ["src.process.image.sha256","Proc","SHA256 do executável.","src.process.image.sha256 = 'COLE_A_HASH_AQUI'"],
+ ["src.process.image.md5","Proc","MD5 do executável.",""],
+ ["src.process.user","Proc","Usuário que executou (DOMÍNIO\\usuário).","src.process.user contains:anycase 'joao.silva'"],
+ ["src.process.pid","Proc","PID.","src.process.pid = 4321"],
+ ["src.process.storyline.id","Proc","Storyline do processo. Copie o ID do alerta na console.","src.process.storyline.id = 'ID_DO_STORYLINE'"],
+ ["src.process.publisher","Proc","Editor da assinatura digital.","src.process.publisher contains:anycase 'Microsoft'"],
+ ["src.process.signedStatus","Proc","signed / unsigned.","src.process.signedStatus = 'unsigned'"],
+ ["src.process.verifiedStatus","Proc","verified / unverified.",""],
+ ["src.process.integrityLevel","Proc","LOW, MEDIUM, HIGH, SYSTEM.","src.process.integrityLevel = 'SYSTEM'"],
+ ["src.process.isStorylineRoot","Proc","true se é a raiz do storyline.",""],
+ ["src.process.parent.name","Proc","Nome do pai do processo origem.","src.process.parent.name = 'winword.exe'"],
+ ["src.process.parent.cmdline","Proc","Linha de comando do pai.",""],
+ ["src.process.parent.image.path","Proc","Caminho do pai.",""],
+ ["tgt.process.name","Tgt","Processo criado (filho) ou alvo de cross-process.","tgt.process.name = 'cmd.exe'"],
+ ["tgt.process.cmdline","Tgt","Linha de comando do processo criado.","tgt.process.cmdline contains:anycase 'vssadmin'"],
+ ["tgt.process.image.path","Tgt","Caminho do processo criado.",""],
+ ["tgt.process.image.sha1","Tgt","SHA1 do processo criado.",""],
+ ["tgt.process.image.sha256","Tgt","SHA256 do processo criado.",""],
+ ["tgt.process.user","Tgt","Usuário do processo criado.",""],
+ ["tgt.process.storyline.id","Tgt","Storyline do processo criado.",""],
+ ["tgt.process.signedStatus","Tgt","signed / unsigned.",""],
+ ["tgt.file.path","Arq","Caminho do arquivo criado/alterado/apagado.","tgt.file.path contains:anycase '\\Temp\\'"],
+ ["tgt.file.sha1","Arq","SHA1 do arquivo.",""],
+ ["tgt.file.sha256","Arq","SHA256 do arquivo.",""],
+ ["tgt.file.md5","Arq","MD5 do arquivo.",""],
+ ["tgt.file.extension","Arq","Extensão sem ponto.","tgt.file.extension in:anycase ('exe','dll','ps1')"],
+ ["tgt.file.oldPath","Arq","Caminho antigo (File Rename).",""],
+ ["tgt.file.size","Arq","Tamanho em bytes.","tgt.file.size > 10000000"],
+ ["tgt.file.isExecutable","Arq","true se for executável.",""],
+ ["src.ip.address","Rede","IP de origem.",""],
+ ["src.port.number","Rede","Porta de origem.",""],
+ ["dst.ip.address","Rede","IP de destino.","dst.ip.address = '185.10.10.10'"],
+ ["dst.port.number","Rede","Porta de destino.","dst.port.number in (3389, 445)"],
+ ["event.network.direction","Rede","INCOMING / OUTGOING.","event.network.direction = 'OUTGOING'"],
+ ["event.network.protocolName","Rede","Protocolo (tcp, udp…).",""],
+ ["event.network.connectionStatus","Rede","SUCCESS / FAILURE.",""],
+ ["event.dns.request","Rede","Domínio consultado.","event.dns.request contains:anycase 'ngrok'"],
+ ["event.dns.response","Rede","Resposta do DNS (IPs).",""],
+ ["url.address","Rede","URL acessada (eventos GET/POST).","url.address contains:anycase 'pastebin'"],
+ ["registry.keyPath","Reg","Caminho da chave.","registry.keyPath contains:anycase 'CurrentVersion\\Run'"],
+ ["registry.value","Reg","Valor gravado.",""],
+ ["event.login.userName","Login","Usuário do logon.","event.login.userName = 'administrador'"],
+ ["event.login.type","Login","NETWORK, INTERACTIVE, REMOTE_INTERACTIVE (RDP)…","event.login.type = 'REMOTE_INTERACTIVE'"],
+ ["event.login.loginIsSuccessful","Login","true / false.","event.login.loginIsSuccessful = false"],
+ ["event.login.loginIsAdministratorEquivalent","Login","Logon com privilégio de admin.",""],
+ ["src.endpoint.ip.address","Login","IP de onde veio o logon.",""],
+ ["indicator.name","Ind","Nome do indicador comportamental.","indicator.name contains:anycase 'Kerberoast'"],
+ ["indicator.category","Ind","Categoria (Persistence, Evasion, Discovery…).","indicator.category = 'Persistence'"],
+ ["indicator.description","Ind","Descrição do indicador.",""],
+ ["indicator.metadata","Ind","Detalhes (inclui técnica MITRE).","indicator.metadata contains 'T1059'"],
+ ["task.name","Outros","Nome da tarefa agendada.",""],
+ ["task.path","Outros","Caminho da tarefa agendada.",""],
+ ["module.path","Outros","DLL carregada (Module Load).",""],
+ ["module.sha1","Outros","SHA1 da DLL.",""],
+ ["cmdScript.content","Outros","Conteúdo de script (PowerShell/AMSI).","cmdScript.content contains:anycase 'Invoke-'"],
+ ["group.id","Geral","ID do grupo. O Event Search filtra grupo pelo ID, não pelo nome.","group.id = 'ID_DO_GRUPO'"]
+];
+const EVENT_TYPES = ["Process Creation","File Creation","File Modification","File Deletion","File Rename","Registry Key Create","Registry Value Modified","Registry Key Delete","IP Connect","IP Listen","DNS Resolved","DNS Unresolved","GET","POST","Login","Logout","Task Register","Task Start","Behavioral Indicators","Module Load","Command Script","Open Remote Process Handle","Named Pipe Creation"];
+const OPS = [
+ ["=  /  !=","igual / diferente (case-sensitive)"],
+ ["contains","contém o texto"],
+ ["contains:anycase","contém, ignorando maiúsculas. Use por padrão em nomes e caminhos."],
+ ["in ( … )","qualquer valor da lista: event.type in ('File Creation','File Rename')"],
+ ["in:anycase ( … )","lista ignorando maiúsculas"],
+ ["contains:anycase ( … )","contém qualquer um da lista"],
+ ["matches","regex: tgt.file.path matches '.*\\\\Temp\\\\[a-z]{8}\\.exe'"],
+ ["and / or / not","combinadores. Use parênteses ao misturar and com or."],
+ ["> < >= <=","números: tgt.file.size > 5000000"],
+ ["| group count() by …","PowerQuery: agrupa e conta (console nova / modo PowerQuery)"],
+ ["| sort -campo  | limit N","ordena decrescente e limita"]
+];
+const RECIPES = [
+ ["PowerShell encodado","Comandos -enc / -encodedcommand.","event.type = 'Process Creation' and tgt.process.name in:anycase ('powershell.exe','pwsh.exe') and tgt.process.cmdline contains:anycase ('-enc ','-encodedcommand','-e ','frombase64string')"],
+ ["Office abrindo shell","Word/Excel criando cmd, PowerShell, wscript.","event.type = 'Process Creation' and src.process.name in:anycase ('winword.exe','excel.exe','powerpnt.exe','outlook.exe') and tgt.process.name in:anycase ('cmd.exe','powershell.exe','wscript.exe','cscript.exe','mshta.exe','rundll32.exe')"],
+ ["Executável em pasta de usuário","Binários executando de Temp, AppData, Downloads.","event.type = 'Process Creation' and tgt.process.image.path contains:anycase ('\\AppData\\','\\Temp\\','\\Downloads\\','\\Users\\Public\\')"],
+ ["Persistência via Run key","Gravação em chaves Run/RunOnce.","event.type = 'Registry Value Modified' and registry.keyPath contains:anycase ('\\CurrentVersion\\Run','\\CurrentVersion\\RunOnce')"],
+ ["Tarefa agendada criada","Novas tarefas agendadas.","event.type = 'Task Register'"],
+ ["Apagar shadow copies","vssadmin, wmic shadowcopy, bcdedit.","event.type = 'Process Creation' and tgt.process.cmdline contains:anycase ('delete shadows','shadowcopy delete','recoveryenabled no','wbadmin delete')"],
+ ["Logon RDP","Logons remotos interativos.","event.type = 'Login' and event.login.type = 'REMOTE_INTERACTIVE'"],
+ ["Falhas de logon","Possível força bruta.","event.type = 'Login' and event.login.loginIsSuccessful = false\n| group count() by event.login.userName, src.endpoint.ip.address\n| sort -count()"],
+ ["Tudo de um storyline","Cole o storyline do alerta.","src.process.storyline.id = 'COLE_AQUI' or tgt.process.storyline.id = 'COLE_AQUI'"],
+ ["Telemetria do host (24h)","Valida se o agente está mandando dados.","endpoint.name contains:anycase 'NOME_DO_HOST'\n| group count() by event.type\n| sort -count()"],
+ ["Ferramentas de acesso remoto","AnyDesk, TeamViewer, ngrok etc.","tgt.process.name in:anycase ('anydesk.exe','teamviewer.exe','ngrok.exe','rustdesk.exe','screenconnect.clientservice.exe','atera_agent.exe') or event.dns.request contains:anycase ('anydesk','ngrok','rustdesk','screenconnect')"],
+ ["LOLBins baixando arquivo","certutil, bitsadmin, curl.","event.type = 'Process Creation' and (tgt.process.cmdline contains:anycase ('certutil -urlcache','bitsadmin /transfer','-downloadstring','invoke-webrequest') )"]
+];
+
+// ===== Idioma atual =====
+let LANG = "pt";
+try{ const u = new URLSearchParams(location.search).get("lang"); const st = localStorage.getItem("s1ql-lang");
+  const nav = (navigator.language||"pt").slice(0,2).toLowerCase();
+  LANG = UI[u] ? u : UI[st] ? st : UI[nav] ? nav : "pt"; }catch(_){}
+function T(k, v){ let x = (UI[LANG]&&UI[LANG][k]!==undefined) ? UI[LANG][k] : UI.pt[k]; if(v && typeof x==="string") for(const n in v) x = x.split("{"+n+"}").join(v[n]); return x; }
+function phx(str){ const m = PH_I18N[LANG]; if(!m||!str) return str; for(const k in m) str = str.split(k).join(m[k]); return str; }
+
+// ===== Utilidades =====
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const q = s => "'" + String(s).replace(/'/g,"\\'") + "'";
+function hl(src){
+  return esc(src)
+    .replace(/(&#39;|')((?:\\.|[^'])*?)\1/g, m=>'<span class="s">'+m+'</span>')
+    .replace(/\b(and|or|not|in|contains|matches|anycase|group|count|by|sort|limit|columns)\b/g,'<span class="k">$1</span>')
+    .replace(/(\|)/g,'<span class="o">$1</span>');
+}
+function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,1600)}
+function setQuery(text, notes){
+  $("#query").innerHTML = hl(text);
+  $("#notes").innerHTML = (notes||[]).map(n=>{
+    const w = n.startsWith("!"); return `<li class="${w?'w':''}">${esc(w?n.slice(1):n)}</li>`;
+  }).join("");
+}
+
+// ===== Motor de regras local (funciona sem IA) =====
+// ===== Normalização e tolerância a erro de digitação =====
+const norm = x => String(x).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+const tokens = x => norm(x).split(/[^a-z0-9+#_-]+/).filter(Boolean);
+function lev(a,b){ if(a===b) return 0; const m=a.length,n=b.length; if(!m||!n) return m||n;
+  let prev=[...Array(n+1).keys()]; for(let i=1;i<=m;i++){ const cur=[i]; for(let j=1;j<=n;j++) cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1)); prev=cur; } return prev[n]; }
+function near(x,w){ if(x===w) return true; const tol = w.length>=7?2:w.length>=4?1:0; return tol>0 && Math.abs(x.length-w.length)<=tol && lev(x,w)<=tol; }
+
+// Tecnologias comuns -> nomes de processo (Windows) e base do nome (Linux)
+const TECH = {
+  php:{win:["php.exe","php-cgi.exe","php-win.exe"], lnx:["php"]},
+  python:{win:["python.exe","pythonw.exe","py.exe"], lnx:["python"]},
+  java:{win:["java.exe","javaw.exe"], lnx:["java"]},
+  node:{win:["node.exe"], lnx:["node"]}, nodejs:{win:["node.exe"], lnx:["node"]},
+  apache:{win:["httpd.exe"], lnx:["httpd","apache2"]}, nginx:{win:["nginx.exe"], lnx:["nginx"]},
+  iis:{win:["w3wp.exe"]}, tomcat:{win:["tomcat9.exe","tomcat8.exe","java.exe"], lnx:["java"]},
+  mssql:{win:["sqlservr.exe"]}, sqlserver:{win:["sqlservr.exe"]}, mysql:{win:["mysqld.exe"], lnx:["mysqld"]},
+  mariadb:{win:["mysqld.exe","mariadbd.exe"], lnx:["mariadbd","mysqld"]}, postgres:{win:["postgres.exe"], lnx:["postgres"]}, postgresql:{win:["postgres.exe"], lnx:["postgres"]},
+  oracle:{win:["oracle.exe"], lnx:["oracle"]}, firefox:{win:["firefox.exe"], lnx:["firefox"]}, teams:{win:["ms-teams.exe","teams.exe"]},
+  putty:{win:["putty.exe"]}, winscp:{win:["winscp.exe"]}, winrar:{win:["winrar.exe","rar.exe"]}, "7zip":{win:["7z.exe","7zg.exe","7zfm.exe"]}, "7-zip":{win:["7z.exe","7zg.exe","7zfm.exe"]},
+  vnc:{win:["vncviewer.exe","winvnc.exe","tvnserver.exe"], lnx:["vnc"]}, ssh:{win:["ssh.exe","sshd.exe"], lnx:["ssh"]}, wsl:{win:["wsl.exe","wslhost.exe"]},
+  vscode:{win:["code.exe"]}, docker:{win:["docker.exe","dockerd.exe"], lnx:["docker","containerd"]}, git:{win:["git.exe"], lnx:["git"]},
+  mimikatz:{win:["mimikatz.exe"]}, procdump:{win:["procdump.exe","procdump64.exe"]}, nmap:{win:["nmap.exe"], lnx:["nmap"]}, ngrok:{win:["ngrok.exe"], lnx:["ngrok"]},
+  rclone:{win:["rclone.exe"], lnx:["rclone"]}, wget:{win:["wget.exe"], lnx:["wget"]}, bash:{win:["bash.exe"], lnx:["bash"]}
+};
+const STOPW = new Set("o a os as um uma uns umas de do da dos das em no na nos nas com sem para pra pro por que qual quais e ou se meu minha meus minhas todo toda todos todas tudo ver mostrar mostra mostre quero queria buscar busca procurar procure encontrar encontre achar ache lista listar liste me onde quando como teve tem tiver foi foram ser esta estao algum alguma alguns algumas nesse nessa neste nesta desse dessa deste desta isso isto ultimo ultima ultimos ultimas hoje ontem dia dias hora horas semana minuto minutos mes ambiente rodando usando tipo coisa coisas qualquer favor the an of in at to from for with without is are was were show list find search get all any my me want need which what where when who that this these those there has have had using use please el la los las un una unos unas del con sin y lo mostrar muestra buscar encontrar listar quiero necesito cual cuales donde cuando estos estas ese esa hay todo".split(" "));
+const VOCAB = "windows linux macos osx servidor servidores server servers estacao estacoes workstation workstations desktop desktops notebook notebooks laptop maquina maquinas endpoint endpoints host hosts computador computadores processo processos executou executado executados execucao executando executar rodou abriu aberto criou criado criados criada criadas gerado gerados escrito soltou arquivo arquivos dns dominio dominios conexao conexoes conectou rede porta portas destino origem registro chave chaves login logins logon logou rdp remoto remota autenticacao falha falhas falhou errada errado invalido forca bruta brute usuario usuarios user conta contas tarefa tarefas agendada agendadas indicador indicadores mitre comportamento comportamental dll dlls modulo modulos carregou carregada url urls site sites acesso acessou hash hashes storyline temp appdata downloads download public pasta pastas assinado assinatura unsigned encodado encodada encoded base64 comando comandos linha cmdline contar conta quantos quantas agrupar agrupado top ranking frequente pai filho iniciado iniciada lancado lancada saida externo externa entrada interno script scripts conteudo exe ps1 bat vbs msi hta scr lnk zip iso apagado apagados deletado deletados excluido renomeado modificado alterado persistencia inicializacao run ip ips sistema sistemas operacional operativo operating system aplicativo aplicativos app apps aplicacao aplicacoes application applications programa programas software grupo grupos group groups baixado baixados baixada baixou downloaded descargado instalacao instalador instaladores installer installers installation setup instalar instalado instalacion diretorio diretorios pasta pastas caminho caminhos path folder folders directory carpeta ruta directorio".split(" ");
+
+function regras(txt){
+  const t = " " + norm(txt) + " ";
+  const toks = tokens(txt);
+  const fz = w => toks.some(x=>near(x,w));
+  const conds = [], notes = [];
+  let types = new Set(), pipe = "";
+  const has = re => re.test(t);
+
+  // tempo -> seletor de tempo do console
+  const tm = t.match(/(últim[oa]s?|ultim[oa]s?)\s+(\d+)\s*(h|hora|horas|dia|dias|min|minutos)/);
+  if(tm) notes.push(T("nPeriod",{p:tm[2]+" "+tm[3]}));
+  else if(has(/\b(hoje|ontem|24h|semana)\b/)) notes.push(T("nTime"));
+
+  // tipos de evento
+  if(has(/\b(dns|domínio|dominio)\b/)) types.add("DNS Resolved");
+  if(has(/\b(conex|conectou|rede|porta|ip de destino|c2)/)) types.add("IP Connect");
+  if(has(/\b(registro|registry|chave|run key)\b/)) { types.add("Registry Value Modified"); types.add("Registry Key Create"); }
+  if(has(/\b(login|logon|logou|rdp|autentica)/)) types.add("Login");
+  if(has(/\btarefa|schtask|scheduled/)) types.add("Task Register");
+  if(has(/\b(indicador|mitre|behavioral|comportament)/)) types.add("Behavioral Indicators");
+  if(has(/\b(dll|módulo|modulo|carreg)/)) types.add("Module Load");
+  if(has(/\b(url|site|download http|get|post)\b/) && !types.size) { types.add("GET"); types.add("POST"); }
+  if(has(/arquivo.*(cri|gerad|escrit|solt)|(cri|solt|escrev).*arquivo|drop/) || has(/\b(baixad\w*|baixou|downloaded|descargad\w*)\b/)) types.add("File Creation");
+  if(has(/arquivo.*(apag|delet|exclu)|(apag|delet|exclu).*arquivo/)) types.add("File Deletion");
+  if(has(/arquivo.*(renome)|renome/)) types.add("File Rename");
+  if(has(/arquivo.*(modific|alter)|(modific|alter).*arquivo/)) types.add("File Modification");
+  if(has(/\bscript\b.*conte|amsi/)) types.add("Command Script");
+  const procWord = has(/\b(execut|rodou|abriu|criou|process|filho|cmdline|linha de comando|comando|encod|powershell|cmd)/);
+  if(procWord && !types.size) types.add("Process Creation");
+
+  const isProcCreate = types.has("Process Creation");
+  const P = isProcCreate ? "tgt.process" : "src.process"; // processo de interesse
+
+  // host
+  const STOP = /^(host|o|a|um|uma|dia|ultimo|último|endpoint|servidor|máquina|maquina|arquivo|processo|usuario|usuário)$/i;
+  const words = txt.split(/\s+/);
+  const HK = /^(host|endpoint|m[aá]quina|esta[cç][aã]o|servidor|computador|no|na|em)$/i;
+  let hostM = null;
+  for(let i=0;i<words.length-1;i++){ const w=words[i+1].replace(/[,;:)]+$/,""); if(HK.test(words[i]) && /^[A-Za-z0-9][A-Za-z0-9._-]{2,}$/.test(w) && !STOP.test(w) && /[0-9-]/.test(w) && !/\.(exe|dll|ps1|bat|msi)$/i.test(w) && !/^\d+$/.test(w)){ hostM=w; break; } }
+  if(hostM) conds.push(`endpoint.name contains:anycase ${q(hostM)}`);
+
+  // storyline
+  const st = txt.match(/\b([0-9A-F]{16})\b/i);
+  if(st && /storyline/i.test(txt)) conds.push(`(src.process.storyline.id = ${q(st[1].toUpperCase())} or tgt.process.storyline.id = ${q(st[1].toUpperCase())})`);
+
+  // hashes
+  const hashes = txt.match(/\b[0-9a-f]{64}\b|\b[0-9a-f]{40}\b|\b[0-9a-f]{32}\b/gi) || [];
+  hashes.forEach(h=>{
+    const k = h.length===64?"sha256":h.length===40?"sha1":"md5";
+    conds.push(`(src.process.image.${k} = ${q(h.toLowerCase())} or tgt.process.image.${k} = ${q(h.toLowerCase())} or tgt.file.${k} = ${q(h.toLowerCase())})`);
+  });
+
+  // IPs
+  const ips = txt.match(/\b\d{1,3}(?:\.\d{1,3}){3}\b/g) || [];
+  if(ips.length){ types.add("IP Connect"); conds.push(ips.length>1?`dst.ip.address in (${ips.map(q).join(", ")})`:`dst.ip.address = ${q(ips[0])}`); }
+
+  // portas
+  const ports = [...t.matchAll(/porta[s]?\s+((?:\d{1,5}[\s,e]*)+)/g)].flatMap(m=>m[1].match(/\d{1,5}/g)||[]);
+  for(const m of t.matchAll(/((?:\d{2,5}[\s,e]*)+)\s*porta/g)) (m[1].match(/\d{2,5}/g)||[]).forEach(n=>{ if(!ports.includes(n) && !ips.some(ip=>ip.includes(n))) ports.push(n); });
+  if(ports.length) conds.push(ports.length>1?`dst.port.number in (${ports.join(", ")})`:`dst.port.number = ${ports[0]}`);
+
+  // domínios
+  const doms = (txt.match(/\b(?:[a-z0-9-]+\.)+(?:com|net|org|io|br|ru|cn|xyz|top|info|me|app|dev|site|online|gov|edu)(?:\.[a-z]{2})?\b/gi)||[])
+     .filter(d=>!/\.(exe|dll|ps1|bat|msi)$/i.test(d) && !ips.includes(d));
+  if(doms.length){
+    if(types.has("GET")||types.has("POST")) conds.push(`url.address contains:anycase ${doms.length>1?"("+doms.map(q).join(", ")+")":q(doms[0])}`);
+    else { types.add("DNS Resolved"); conds.push(`event.dns.request contains:anycase ${doms.length>1?"("+doms.map(q).join(", ")+")":q(doms[0])}`); }
+  }
+
+  // nomes de processo
+  const known = {powershell:"powershell.exe",pwsh:"pwsh.exe",cmd:"cmd.exe",rundll32:"rundll32.exe",regsvr32:"regsvr32.exe",mshta:"mshta.exe",wscript:"wscript.exe",cscript:"cscript.exe",certutil:"certutil.exe",bitsadmin:"bitsadmin.exe",msiexec:"msiexec.exe",psexec:"psexec.exe",wmic:"wmic.exe",schtasks:"schtasks.exe",word:"winword.exe",winword:"winword.exe",excel:"excel.exe",outlook:"outlook.exe",chrome:"chrome.exe",edge:"msedge.exe",anydesk:"anydesk.exe",teamviewer:"teamviewer.exe",vssadmin:"vssadmin.exe",net:"net.exe",whoami:"whoami.exe",curl:"curl.exe"};
+  let exes = (txt.match(/\b[\w.$-]+\.(?:exe|dll|ps1|bat|vbs|js|msi|hta|scr)\b/gi)||[]).map(s=>s.toLowerCase());
+  const tNoDom = doms.reduce((a,d)=>a.split(d.toLowerCase()).join(" "), t);
+  const toksNoDom = tokens(tNoDom);
+  Object.keys(known).forEach(k=>{ const hit = new RegExp("\\b"+k+"\\b").test(tNoDom) || (k.length>=6 && toksNoDom.some(x=>near(x,k))); if(hit && !exes.includes(known[k])) exes.push(known[k]); });
+  const isLinux = fz("linux") || /\b(rhel|ubuntu|centos|debian|redhat|oracle linux)\b/.test(t);
+  const techHit = [], lnxNames = [];
+  const DIRW = "diretorios?|pastas?|caminhos?|paths?|folders?|director(?:y|ies)|carpetas?|rutas?|directorios?";
+  const dirMode = new RegExp("\\b("+DIRW+")\\b").test(t);
+  Object.entries(TECH).forEach(([k,v])=>{
+    const hit = k.length>=5 ? toksNoDom.some(x=>near(x,k)) : toksNoDom.includes(k);
+    if(!hit) return; techHit.push(k);
+    if(dirMode) return; // "pasta do php" = caminho, não processo
+    if(isLinux && v.lnx) lnxNames.push(...v.lnx); else exes.push(...v.win);
+  });
+  let dirAlvos = [];
+  if(dirMode){
+    dirAlvos = [...techHit];
+    const okNome = w => w && w.length>=2 && !STOPW.has(w) && !VOCAB.includes(w) && !/^(do|da|de|del|of|the)$/.test(w);
+    const m1 = t.match(new RegExp("\\b(?:"+DIRW+")\\s+(?:(?:d[oa]s?|de|del|of|the)\\s+)?([a-z0-9._$-]+)"));
+    const m2 = t.match(new RegExp("([a-z0-9._$-]+)\\s+(?:"+DIRW+")\\b"));
+    [m1&&m1[1], m2&&m2[1]].forEach(w=>{ if(okNome(w) && !dirAlvos.includes(w)) dirAlvos.push(w); });
+  }
+  const extOnly = [...t.matchAll(/(?:^|\s)\.(exe|dll|ps1|bat|vbs|js|hta|scr|msi|lnk|zip|iso)\b/g)].map(m=>m[1]);
+  if(extOnly.length && [...types].some(x=>x.startsWith("File"))) conds.push(extOnly.length>1?`tgt.file.extension in:anycase (${extOnly.map(q).join(", ")})`:`tgt.file.extension = ${q(extOnly[0])}`);
+  exes = [...new Set(exes)].filter(e=>!/\.dll$/.test(e) || !types.has("Module Load"));
+  const paiM = t.match(/(?:pai|parent|iniciad[oa] por|aberto por|lan[cç]ad[oa] por|filho de)\s+([\w.-]+)/);
+  let parent = null;
+  if(paiM){ const p = paiM[1].replace(/\.exe$/,""); parent = known[p] || (p+".exe"); exes = exes.filter(e=>e!==parent); }
+  if(parent){ types.add("Process Creation"); conds.push(`src.process.name = ${q(parent)}`); }
+  const inst = /\b(instalac\w*|instalador\w*|installers?|installation|setup|instalar|instalado|instalacion\w*)\b/.test(t);
+  let instNomes = [];
+  if(inst && !parent){ instNomes = exes.map(e=>e.replace(/\.exe$/,"")); exes = []; }   // "instalador do anydesk" = arquivo, não processo
+  const PP = (types.has("Process Creation")) ? "tgt.process" : "src.process";
+  if(instNomes.length) conds.push(`tgt.file.path contains:anycase ${instNomes.length>1?"("+[...new Set(instNomes)].map(q).join(", ")+")":q(instNomes[0])}`);
+  if(exes.length) conds.push(exes.length>1?`${PP}.name in:anycase (${exes.map(q).join(", ")})`:`${PP}.name = ${q(exes[0])}`);
+  const lnxU = [...new Set(lnxNames)];
+  if(lnxU.length) conds.push(`${PP}.name contains:anycase ${lnxU.length>1?"("+lnxU.map(q).join(", ")+")":q(lnxU[0])}`);
+  if(types.has("Module Load")){ const dll=(txt.match(/\b[\w.-]+\.dll\b/i)||[])[0]; if(dll) conds.push(`module.path contains:anycase ${q(dll)}`); }
+
+  // diretório pedido
+  if(dirAlvos.length){
+    const sep = isLinux ? "/" : "\\";
+    const vals = dirAlvos.map(x=>sep+x+sep), L = vals.length>1 ? "("+vals.map(q).join(", ")+")" : q(vals[0]);
+    const temArq = [...types].some(x=>x.startsWith("File"));
+    if(temArq) conds.push(`tgt.file.path contains:anycase ${L}`);
+    else if(types.has("Process Creation")) conds.push(`tgt.process.image.path contains:anycase ${L}`);
+    else conds.push(`(src.process.image.path contains:anycase ${L} or tgt.file.path contains:anycase ${L})`);
+  }
+
+  // linha de comando
+  if(has(/encod|base64|-enc\b/)) conds.push(`${PP}.cmdline contains:anycase ('-enc ', '-encodedcommand', '-e ', 'frombase64string')`);
+  const quoted = [...txt.matchAll(/["“']([^"”']{2,})["”']/g)].map(m=>m[1]);
+  quoted.forEach(s=>conds.push(`${PP}.cmdline contains:anycase ${q(s)}`));
+
+  // usuário
+  const us = txt.match(/\b(?:usu[aá]rio|user|conta)\s+([A-Za-z0-9._\\-]{2,})/i);
+  if(us){ if(types.has("Login")) conds.push(`event.login.userName contains:anycase ${q(us[1])}`); else conds.push(`${PP}.user contains:anycase ${q(us[1])}`); }
+
+  // pastas suspeitas
+  const dirs=[]; if(has(/\btemp\b/))dirs.push("\\Temp\\"); if(has(/appdata/))dirs.push("\\AppData\\"); if(has(/download/))dirs.push("\\Downloads\\"); if(has(/public/))dirs.push("\\Users\\Public\\");
+  if(dirs.length){ const fld = [...types].some(x=>x.startsWith("File"))?"tgt.file.path":`${PP}.image.path`; conds.push(`${fld} contains:anycase ${dirs.length>1?"("+dirs.map(q).join(", ")+")":q(dirs[0])}`); }
+
+  // assinatura
+  if(has(/não assinad|nao assinad|unsigned|sem assinatura/)) conds.push(`${PP}.signedStatus = 'unsigned'`);
+
+  // logins
+  if(types.has("Login")){
+    if(has(/\brdp\b|remot/)) conds.push("event.login.type = 'REMOTE_INTERACTIVE'");
+    if(has(/falh|errad|invalid|brute|forca bruta/)) conds.push("event.login.loginIsSuccessful = false");
+  }
+  if(types.has("Registry Value Modified") && has(/\brun\b|persist|inicializa/)) conds.push("registry.keyPath contains:anycase ('\\CurrentVersion\\Run', '\\CurrentVersion\\RunOnce')");
+  if(has(/kerberoast/)) { types.add("Behavioral Indicators"); conds.push("indicator.name contains:anycase 'kerberoast'"); }
+  const mitre = txt.match(/\bT\d{4}(?:\.\d{3})?\b/i); if(mitre){ types.add("Behavioral Indicators"); conds.push(`indicator.metadata contains ${q(mitre[0].toUpperCase())}`); }
+  if(has(/\bsaída|saida|outbound|externo/) && types.has("IP Connect")) conds.push("event.network.direction = 'OUTGOING'");
+  if(fz("windows")) conds.push("endpoint.os = 'windows'");
+  else if(isLinux) conds.push("endpoint.os = 'linux'");
+  else if(fz("macos") || /\b(mac|osx)\b/.test(t)) conds.push("endpoint.os = 'osx'");
+  // grupo do console ("no grupo Desktops", "Desktops group")
+  let grupoNome = null;
+  { const g1 = t.match(/\b(?:grupo|group)\s+(?:(?:de|do|da|del|of|the)\s+)?["']?([a-z0-9][\w.-]*)/);
+    const g2 = t.match(/([a-z0-9][\w.-]*)\s+(?:grupo|group)\b/);
+    const ok = w => w && !STOPW.has(w) && !/^(no|na|em|o|a|in|the|on|um|uma)$/.test(w);
+    grupoNome = ok(g1 && g1[1]) ? g1[1] : ok(g2 && g2[1]) ? g2[1] : null;
+    if(grupoNome){ const orig = (txt.match(new RegExp(grupoNome.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),"i"))||[grupoNome])[0];
+      conds.push("group.id = "+q(phx("ID_DO_GRUPO"))); notes.push("!"+T("nGroup",{g:orig})); } }
+  const tEp = grupoNome ? t.replace(new RegExp("\\b"+grupoNome.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\b","g")," ") : t;
+  let tipoEp = false;
+  if(/\b(servidor|servidores|server|servers)\b/.test(tEp) || (!grupoNome && fz("servidores"))){ conds.push("endpoint.type contains:anycase 'server'"); tipoEp = true; }
+  else if(/\b(estacao|estacoes|workstations?|desktops?|notebooks?|laptops?)\b/.test(tEp) || (!grupoNome && fz("estacoes"))){ conds.push("endpoint.type in:anycase ('desktop', 'laptop')"); tipoEp = true; }
+  if(tipoEp) notes.push(T("nEpType"));
+
+  // palavras que não reconheci: busca como texto no processo
+  const usados = [hostM, grupoNome, st&&st[1], us&&us[1], ...hashes, ...ips, ...doms, ...exes, ...instNomes, ...quoted, ...ports, ...dirAlvos].filter(Boolean).map(norm);
+  const sobra = [...new Set(toks.filter(x => x.length>=3 && !/^\d+$/.test(x) && !STOPW.has(x)
+      && !VOCAB.some(v=>near(x,v)) && !Object.keys(known).some(k=>near(x,k)) && !techHit.some(k=>near(x,k))
+      && !usados.some(u=>u.includes(x)) && !/^\.?(exe|dll)$/.test(x)))].slice(0,4);
+  // instalador / arquivo: dá contexto às palavras desconhecidas
+  const fileCtx = [...types].some(x=>x.startsWith("File")) || /\barquivos?\b/.test(t) || inst;
+  const soFiltros = conds.every(c => /^(endpoint\.|group\.id)/.test(c));   // só host/SO/tipo: falta o "assunto"
+  if(sobra.length){
+    const w = sobra.map(x=>'"'+x+'"').join(", ");
+    if(soFiltros){
+      // cada palavra precisa aparecer (and): "wps office" acha WPSOffice_setup.exe e \WPS Office\
+      sobra.forEach(x => conds.push(fileCtx ? `tgt.file.path contains:anycase ${q(x)}` : `(${PP}.name contains:anycase ${q(x)} or ${PP}.cmdline contains:anycase ${q(x)})`));
+      notes.push("!"+T(fileCtx ? "nUnknownFile" : "nUnknown",{w}));
+    } else notes.push("!"+T("nIgnored",{w}));
+  }
+  if(inst && fileCtx && !extOnly.length) conds.push("tgt.file.extension in:anycase ('exe', 'msi')");
+
+  // agregação
+  if(has(/\b(contar|conta|quantos|quantas|agrup|top|ranking|mais frequent)/)){
+    const porM = t.match(/por\s+(ip|host|m[aá]quina|endpoint|usu[aá]rio|processo|dom[ií]nio|porta)/);
+    const porMap = {ip: types.has("Login")?"src.endpoint.ip.address":"dst.ip.address", host:"endpoint.name", endpoint:"endpoint.name", "máquina":"endpoint.name", maquina:"endpoint.name", "usuário": types.has("Login")?"event.login.userName":"src.process.user", usuario: types.has("Login")?"event.login.userName":"src.process.user", processo:"src.process.name", "domínio":"event.dns.request", dominio:"event.dns.request", porta:"dst.port.number"};
+    const by = porM ? porMap[porM[1]] : types.has("DNS Resolved")?"event.dns.request":types.has("IP Connect")?"dst.ip.address":types.has("Login")?"event.login.userName":"endpoint.name";
+    pipe = `\n| group count() by ${by}\n| sort -count()\n| limit 50`;
+  }
+
+  // monta
+  const tl = [...types];
+  const parts = [];
+  if(tl.length===1) parts.push(`event.type = ${q(tl[0])}`);
+  else if(tl.length>1) parts.push(`event.type in (${tl.map(q).join(", ")})`);
+  parts.push(...conds);
+  if(!parts.length){
+    return {query:"", notes:["!"+T("nNone")]};
+  }
+  if(tl.length>1 && conds.length) notes.push("!"+T("nMixed"));
+  notes.push(T("nRules",{n:parts.length}));
+  return {query: parts.join("\nand ") + pipe, notes};
+}
+
+// ===== Motores de IA (o visitante escolhe e usa a própria chave) =====
+let sample = null; // só existe quando aberto dentro do claude.ai
+function sysPrompt(){ return `You are a SentinelOne Deep Visibility expert. Convert requests written in any language into S1QL queries for Event Search.
+Rules:
+- Use only these fields: ${FIELDS.map(f=>f[0]).join(", ")}.
+- Allowed event.type values: ${EVENT_TYPES.join(" | ")}.
+- In Process Creation, tgt.process.* is the created process and src.process.* is the parent.
+- Use contains:anycase for names, paths and command lines. Strings in single quotes. Single backslashes in Windows paths (e.g. '\AppData\').
+- Never put the time range in the query; explain in notes that it goes in the time picker.
+- Aggregate only when asked (count, top, group): use "| group count() by field | sort -count() | limit 50" on separate lines.
+- Break the query into lines before each "and".
+Reply ONLY with JSON: {"query":"...","notes":["short sentence","..."]}. Write the notes in ${T("aiLang")}, at most 3, explaining the logic and what to review.`; }
+
+const PROV = {
+  local:      {nk:"pLocal"},
+  s1auto:     {nk:"pFreeAuto", tipo:"proxy", prov:"auto", semChave:true},
+  s1gemini:   {nk:"pFreeGemini", tipo:"proxy", prov:"gemini", semChave:true},
+  s1groq:     {nk:"pFreeGroq", tipo:"proxy", prov:"groq", semChave:true},
+  claudeai:   {nk:"pClaudeai", soClaude:true},
+  openai:     {nome:"ChatGPT (OpenAI)", tipo:"oa", base:"https://api.openai.com/v1", model:"gpt-4o-mini", link:"https://platform.openai.com/api-keys"},
+  gemini:     {nome:"Gemini (Google)", tipo:"gemini", model:"gemini-2.5-flash", link:"https://aistudio.google.com/apikey", dk:"dGemini"},
+  anthropic:  {nome:"Claude (API Anthropic)", tipo:"anthropic", model:"claude-haiku-5-5", link:"https://console.anthropic.com/settings/keys"},
+  groq:       {nk:"pGroq", tipo:"oa", base:"https://api.groq.com/openai/v1", model:"llama-3.3-70b-versatile", link:"https://console.groq.com/keys", dk:"dGroq"},
+  openrouter: {nk:"pOpenrouter", tipo:"oa", base:"https://openrouter.ai/api/v1", model:"openrouter/auto", link:"https://openrouter.ai/keys", dk:"dOpenrouter"},
+  deepseek:   {nome:"DeepSeek", tipo:"oa", base:"https://api.deepseek.com/v1", model:"deepseek-chat", link:"https://platform.deepseek.com/api_keys"},
+  ollama:     {nk:"pOllama", tipo:"oa", base:"http://localhost:11434/v1", model:"llama3.1", semChave:true, dk:"dOllama"},
+  custom:     {nk:"pCustom", tipo:"oa", base:"", model:"", custom:true, dk:"dCustom"}
+};
+const API_URL = "/api.php"; // intermediário no próprio site (HostGator)
+const pname = id => PROV[id].nk ? T(PROV[id].nk) : PROV[id].nome;
+let cfg = {engine:"local", m:{}, k:{}, u:{}, remember:false};
+try{ const c = JSON.parse(localStorage.getItem("s1ql-cfg")||"null"); if(c) cfg = Object.assign(cfg,c); }catch(_){}
+const sessKeys = {}; // chaves não lembradas ficam só na memória desta aba
+function saveCfg(){ try{ const c = JSON.parse(JSON.stringify(cfg)); if(!c.remember) c.k = {}; localStorage.setItem("s1ql-cfg", JSON.stringify(c)); }catch(_){} }
+function keyOf(e){ return sessKeys[e] || cfg.k[e] || ""; }
+
+function fillEngines(){
+  $("#motor").innerHTML = Object.entries(PROV).filter(([id,p])=>!p.soClaude || sample)
+    .map(([id,p])=>`<option value="${id}">${esc(pname(id))}</option>`).join("");
+  if(!PROV[cfg.engine] || (PROV[cfg.engine].soClaude && !sample)) cfg.engine = "local";
+  $("#motor").value = cfg.engine; syncCfg(); setMode();
+}
+function syncCfg(){
+  const e = cfg.engine, p = PROV[e];
+  const precisa = !!p.tipo && p.tipo!=="proxy";
+  $("#cfgBtn").hidden = !precisa; if(!precisa){ $("#cfg").hidden = true; $("#cfgBtn").setAttribute("aria-expanded","false"); }
+  $("#fKey").hidden = !!p.semChave;
+  $("#fUrl").hidden = !(p.custom || e==="ollama");
+  $("#apiKey").value = keyOf(e);
+  $("#model").value = cfg.m[e] || p.model || "";
+  $("#baseUrl").value = cfg.u[e] || p.base || "";
+  $("#remember").checked = !!cfg.remember;
+  $("#cfgHint").innerHTML = (p.link?`${esc(T("getKey"))} <a href="${p.link}" target="_blank" rel="noopener">${esc(p.link.replace("https://",""))}</a>. `:"") + esc(p.dk?T(p.dk):"") + (p.model?" "+T("modelTip"):"");
+}
+function setMode(){
+  const p = PROV[cfg.engine];
+  let st = "";
+  if(p.tipo && !p.semChave && !keyOf(cfg.engine)) st = " "+T("noKey");
+  $("#mode").innerHTML = `${esc(T("mode"))}: <b>${esc(pname(cfg.engine))}</b>${esc(st)}`;
+}
+function aplicaMotor(e){
+  cfg.engine = e; $("#motor").value = e; saveCfg(); syncCfg(); setMode();
+  const p = PROV[e]; if(p.tipo && !p.semChave && !keyOf(e)){ $("#cfg").hidden=false; $("#cfgBtn").setAttribute("aria-expanded","true"); $("#apiKey").focus(); }
+}
+let motorPendente = null;
+$("#motor").addEventListener("change",ev=>{
+  const e = ev.target.value;
+  if(e!=="local" && cfg.aceite!=="2"){
+    motorPendente = e; $("#motor").value = cfg.engine;
+    const d = $("#aviso"); if(d.showModal) d.showModal(); else d.setAttribute("open","");
+    return;
+  }
+  aplicaMotor(e);
+});
+function fechaAviso(){ const d=$("#aviso"); if(d.close) d.close(); else d.removeAttribute("open"); }
+$("#avisoSim").addEventListener("click",()=>{ cfg.aceite = "2"; fechaAviso(); if(motorPendente) aplicaMotor(motorPendente); motorPendente=null; });
+$("#avisoNao").addEventListener("click",()=>{ motorPendente=null; fechaAviso(); toast(T("keptNoAi")); });
+$("#aviso").addEventListener("cancel",()=>{ motorPendente=null; });
+$("#cfgForget").addEventListener("click",()=>{
+  cfg.k = {}; for(const k in sessKeys) delete sessKeys[k];
+  cfg.remember = false; saveCfg(); syncCfg(); setMode(); toast(T("keysErased"));
+});
+$("#cfgBtn").addEventListener("click",()=>{ const h = !$("#cfg").hidden; $("#cfg").hidden = h; $("#cfgBtn").setAttribute("aria-expanded", String(!h)); });
+$("#cfgSave").addEventListener("click",()=>{
+  const e = cfg.engine;
+  cfg.remember = $("#remember").checked;
+  const k = $("#apiKey").value.trim();
+  sessKeys[e] = k; if(cfg.remember) cfg.k[e] = k; else delete cfg.k[e];
+  cfg.m[e] = $("#model").value.trim(); cfg.u[e] = $("#baseUrl").value.trim();
+  saveCfg(); setMode(); $("#cfg").hidden = true; $("#cfgBtn").setAttribute("aria-expanded","false"); toast(T("cfgSaved"));
+});
+
+function extraiJSON(txt){
+  const t = String(txt).replace(/```(?:json)?/gi,"").trim();
+  const i = t.indexOf("{"), j = t.lastIndexOf("}");
+  if(i<0||j<i) throw new Error(T("eJson"));
+  return JSON.parse(t.slice(i,j+1));
+}
+async function chamaIA(e, pedido){
+  const p = PROV[e], key = keyOf(e), model = cfg.m[e] || p.model, base = (cfg.u[e] || p.base || "").replace(/\/+$/,"");
+  if(p.tipo==="proxy"){
+    if(pedido.length > 300) throw {msg:T("eFree_too_long")};
+    let r, j = null;
+    try{ r = await fetch(API_URL, {method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({provider:p.prov, request:pedido, lang:LANG})}); }
+    catch(_){ throw {msg:T("eFree_off")}; }
+    try{ j = await r.json(); }catch(_){}
+    if(!r.ok || !j || typeof j.query!=="string"){ const c = (j && j.error) || (r.status===404 ? "off" : "upstream"); throw {msg: (T("eFree_"+c) || T("eFree_upstream")) + (j && j.detail ? " ["+String(j.detail).slice(0,200)+"]" : ""), code:c}; }
+    return j;
+  }
+  if(!p.semChave && !key) throw {msg:T("eKeyCfg")};
+  if(!model) throw {msg:T("eModel")};
+  let r, body, headers = {"content-type":"application/json"};
+  if(p.tipo==="oa"){
+    if(!base) throw {msg:T("eUrl")};
+    if(key) headers.authorization = "Bearer " + key;
+    body = {model, temperature:0, messages:[{role:"system",content:sysPrompt()},{role:"user",content:"Request: "+pedido}]};
+    r = await fetch(base + "/chat/completions", {method:"POST", headers, body:JSON.stringify(body)});
+  } else if(p.tipo==="anthropic"){
+    Object.assign(headers, {"x-api-key":key, "anthropic-version":"2023-06-01", "anthropic-dangerous-direct-browser-access":"true"});
+    body = {model, max_tokens:1024, temperature:0, system:sysPrompt(), messages:[{role:"user",content:"Request: "+pedido}]};
+    r = await fetch("https://api.anthropic.com/v1/messages", {method:"POST", headers, body:JSON.stringify(body)});
+  } else if(p.tipo==="gemini"){
+    body = {systemInstruction:{parts:[{text:sysPrompt()}]}, contents:[{role:"user",parts:[{text:"Request: "+pedido}]}], generationConfig:{temperature:0}};
+    r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`, {method:"POST", headers, body:JSON.stringify(body)});
+  }
+  if(!r.ok){
+    let det = ""; try{ const j = await r.json(); det = (j.error && (j.error.message||j.error)) || j.message || ""; }catch(_){}
+    const msg = r.status===401||r.status===403 ? T("e401")
+              : r.status===404 ? T("e404",{m:model})
+              : r.status===429 ? T("e429")
+              : T("eStatus",{s:r.status});
+    throw {msg: msg + (det && typeof det==="string" ? " ("+det.slice(0,140)+")" : "")};
+  }
+  const j = await r.json();
+  const txt = p.tipo==="oa" ? j.choices?.[0]?.message?.content
+            : p.tipo==="anthropic" ? (j.content||[]).map(c=>c.text||"").join("")
+            : (j.candidates?.[0]?.content?.parts||[]).map(x=>x.text||"").join("");
+  return extraiJSON(txt||"");
+}
+
+async function gerar(){
+  const txt = $("#pedido").value.trim();
+  if(!txt){ setQuery("",["!"+T("writeSomething")]); return; }
+  const st = $("#status"), e = cfg.engine;
+  if(e==="local"){ const r = regras(traduzPedido(txt)); setQuery(r.query, r.notes); st.hidden=true; return; }
+  st.hidden=false; st.className="status"; st.textContent = `${T("generating")} ${pname(e)}…`;
+  $("#gerar").disabled = true;
+  try{
+    const r = e==="claudeai"
+      ? await sample.json([{role:"user",content:sysPrompt()+"\n\nRequest: "+txt}], {modelTier:"default"})
+      : await chamaIA(e, txt);
+    if(!r || typeof r.query!=="string") throw {msg:T("eFormat")};
+    setQuery(r.query, [...(r.notes||[]).slice(0,3), T("genBy",{n: r.engine ? pname(r.engine==="gemini"?"s1gemini":"s1groq") : pname(e)})]);
+    st.hidden = true;
+  }catch(err){
+    if(err && err.code==="out_of_scope"){ setQuery("", ["!"+err.msg]); st.hidden = true; return; }
+    const r = regras(traduzPedido(txt)); setQuery(r.query, r.notes);
+    let m = err && err.msg;
+    if(!m && err instanceof TypeError) m = e==="ollama" ? T("eOllama") : T("eConn");
+    if(!m) m = (err && err.message) || T("eAi");
+    st.className="status err"; st.textContent = m + " " + T("usedRules");
+  }finally{ $("#gerar").disabled=false; }
+}
+// ===== Render de campos, operadores, receitas =====
+let filtro = "Todos";
+const fdesc = i => LANG==="pt" ? FIELDS[i][2] : FIELD_I18N[LANG][i];
+function renderFields(){
+  const b = $("#busca").value.toLowerCase().trim();
+  const list = FIELDS.map((f,i)=>[f[0],f[1],fdesc(i),phx(f[3])]).filter(f=>(filtro==="Todos"||f[1]===filtro) && (!b || (f[0]+" "+f[2]+" "+f[3]).toLowerCase().includes(b)));
+  $("#fields").innerHTML = list.map(f=>`<div class="f"><code>${esc(f[0])}</code><button data-ins="${esc(f[0])}" aria-label="${esc(T("insert")+" "+f[0])}">${esc(T("insert"))}</button><div class="d">${esc(f[2])}</div>${f[3]?`<div class="ex">${esc(f[3])}</div>`:""}</div>`).join("") || `<p class="status">${esc(T("noField"))} "${esc(b)}".</p>`;
+}
+function renderFilters(){
+  const cats = ["Todos",...Object.keys(CAT)];
+  $("#filters").innerHTML = cats.map(c=>`<button aria-pressed="${c===filtro}" data-cat="${c}">${esc(c==="Todos"?T("all"):CAT_I18N[LANG][c])}</button>`).join("");
+}
+$("#filters").addEventListener("click",e=>{const c=e.target.dataset.cat;if(!c)return;filtro=c;renderFilters();renderFields();});
+$("#busca").addEventListener("input",renderFields);
+$("#fields").addEventListener("click",e=>{
+  const f=e.target.dataset.ins; if(!f) return;
+  const cur = $("#query").innerText.trim();
+  $("#query").innerHTML = hl(cur ? cur+"\nand "+f+" contains:anycase ''" : f+" contains:anycase ''");
+  toast(T("inserted"));
+});
+const rcp = i => { const r = RECIPES[i], x = LANG==="pt" ? null : RECIPES_I18N[LANG][i]; return [x?x[0]:r[0], x?x[1]:r[1], phx(r[2])]; };
+function renderStatic(){
+  $("#ops").innerHTML = OPS.map((o,i)=>`<code>${esc(o[0])}</code><span>${esc(LANG==="pt"?o[1]:OPS_I18N[LANG][i])}</span>`).join("");
+  $("#recipes").innerHTML = RECIPES.map((_,i)=>{ const r = rcp(i); return `<div class="r"><h3>${esc(r[0])}</h3><p>${esc(r[1])}</p><pre>${esc(r[2])}</pre><div class="row"><button data-use="${i}">${esc(T("use"))}</button><button data-cp="${i}">${esc(T("copy"))}</button></div></div>`; }).join("");
+  $("#examples").innerHTML = [...EXAMPLES_I18N[LANG], HASH_CHIP[LANG]+" "+T("hashPh")].map(x=>`<button class="chip">${esc(x)}</button>`).join("");
+}
+$("#recipes").addEventListener("click",e=>{
+  const u=e.target.dataset.use, c=e.target.dataset.cp;
+  if(u!==undefined){ const r = rcp(u); setQuery(r[2],[T("recipeNote",{r:r[0]})]); window.scrollTo({top:0,behavior:"smooth"}); }
+  if(c!==undefined) copy(rcp(c)[2]);
+});
+$("#examples").addEventListener("click",e=>{
+  if(!e.target.classList.contains("chip")) return;
+  const v = e.target.textContent, ph = T("hashPh"), i = v.indexOf(ph);
+  $("#pedido").value = v;
+  if(i>=0){ const el=$("#pedido"); el.focus(); el.setSelectionRange(i, i+ph.length); return; } // espera o analista colar
+  gerar();
+});
+
+function copy(text){
+  try{ navigator.clipboard.writeText(text).then(()=>toast(T("copied")),()=>fallbackCopy()); }catch(_){ fallbackCopy(); }
+  function fallbackCopy(){ const r=document.createRange(); r.selectNodeContents($("#query")); const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast(T("selected")); }
+}
+$("#copiar").addEventListener("click",()=>copy($("#query").innerText.trim()));
+$("#gerar").addEventListener("click",gerar);
+$("#limpar").addEventListener("click",()=>{ $("#pedido").value=""; setQuery("",[]); $("#pedido").focus(); });
+$("#pedido").addEventListener("keydown",e=>{ if(e.key==="Enter" && (e.ctrlKey||e.metaKey)){ e.preventDefault(); gerar(); }});
+
+
+// ===== Tema claro/escuro =====
+const SUN='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const MOON='<svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>';
+function temaAtual(){ const a=document.documentElement.getAttribute("data-theme"); if(a) return a; return matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"; }
+function pintaBotaoTema(){ const d = temaAtual()==="dark"; $("#tema").innerHTML = (d?SUN:MOON)+`<span>${esc(d?T("light"):T("dark"))}</span>`; $("#tema").setAttribute("aria-label", T("themeAria")); $("#tema").setAttribute("aria-pressed", String(d)); }
+$("#tema").addEventListener("click",()=>{ const n = temaAtual()==="dark"?"light":"dark"; document.documentElement.setAttribute("data-theme",n); try{localStorage.setItem("s1ql-tema",n);}catch(_){} pintaBotaoTema(); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",pintaBotaoTema);
+pintaBotaoTema();
+
+// ===== Aplicar idioma =====
+function applyLang(first){
+  const prevDefault = first ? null : $("#pedido").dataset.def;
+  document.documentElement.lang = HTML_LANG[LANG];
+  const set = (id,k) => { const el=$("#"+id); if(el) el.textContent = T(k); };
+  [["tTag","tagline"],["tIntro","intro"],["tAsk","ask"],["gerar","gen"],["limpar","clear"],["tEngine","engine"],["cfgBtn","cfg"],["tKey","key"],["tModel","model"],["tUrl","url"],
+   ["tRemember","remember"],["tPriv","privacy"],["cfgSave","save"],["cfgForget","forget"],["tQuery","query"],["copiar","copy"],["tFields","fields"],["tOps","ops"],["tRecipes","recipes"],
+   ["tFoot1","foot1"],["tFoot2","foot2"],["cookieTxt","cTxt"],["cookieOk","cOk"],["cookieLink","cLink"],["avisoT","mTitle"],["avisoNao","cancel"],["avisoSim","agree"],["tLangLbl","langAria"]].forEach(([id,k])=>set(id,k));
+  $("#apiKey").placeholder = T("keyPh"); $("#busca").placeholder = T("searchPh");
+  $("#lang").setAttribute("aria-label", T("langAria"));
+  $("#avisoList").innerHTML = T("mItems").map(([b,r])=>`<li><b>${esc(b)}</b> ${esc(r)}</li>`).join("");
+  const ped = $("#pedido");
+  if(first || ped.value.trim()==="" || ped.value===prevDefault){ ped.value = T("defaultAsk"); }
+  ped.dataset.def = T("defaultAsk");
+  renderStatic(); renderFilters(); renderFields(); fillEngines(); pintaBotaoTema();
+  const r = regras(traduzPedido(ped.value)); setQuery(r.query, r.notes);
+}
+$("#lang").innerHTML = Object.entries(LANGS).map(([k,v])=>`<option value="${k}">${v}</option>`).join("");
+$("#lang").value = LANG;
+$("#lang").addEventListener("change",e=>{
+  LANG = e.target.value;
+  try{ localStorage.setItem("s1ql-lang",LANG); const u = new URL(location.href); u.searchParams.set("lang",LANG); history.replaceState(null,"",u); }catch(_){}
+  applyLang(false);
+});
+applyLang(true);
+// ===== Aviso de cookies (abre pelo link no rodapé) =====
+$("#cookieLink").addEventListener("click",()=>{ const c=$("#cookie"); c.hidden = !c.hidden; if(!c.hidden) $("#cookieOk").focus(); });
+$("#cookieOk").addEventListener("click",()=>{ $("#cookie").hidden = true; });
+// dentro do claude.ai, oferece também a conta do visitante como motor
+(async()=>{ try{ if(window.claude && claude.use){ sample = await claude.use("sample"); if(sample) fillEngines(); } }catch(_){ sample=null; } })();
+</script>
+
+</body>
+</html>
